@@ -2,8 +2,8 @@
 <project
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
 	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<modelVersion>4.0.0</modelVersion>
 
+	<modelVersion>4.0.0</modelVersion>
 
 	<artifactId>nosql-social-model</artifactId>
 	<groupId>it.uniroma3.dia.giw</groupId>
@@ -12,4 +12,56 @@
 
 	<name>GIW project - NoSql Social Graph Model</name>
 
+	<properties>
+		<joda-time.version>2.1</joda-time.version>
+		<guava.version>13.0.1</guava.version>
+		<slf4j-api.version>1.7.5</slf4j-api.version>
+		<testng.version>5.14.10</testng.version>
+		<elasticsearch.version>0.20.6</elasticsearch.version>
+		<jackson-xc.version>1.9.9</jackson-xc.version>
+		<apache-commons.version>3.0</apache-commons.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>${apache-commons.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<version>${joda-time.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>${guava.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j-api.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>${slf4j-api.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+			<version>${testng.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.elasticsearch</groupId>
+			<artifactId>elasticsearch</artifactId>
+			<version>${elasticsearch.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-xc</artifactId>
+			<version>${jackson-xc.version}</version>
+		</dependency>
+	</dependencies>
 </project>
