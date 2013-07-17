@@ -17,3 +17,10 @@ Ogni diagramma descrive l'andamento con il crescere del repository di un metodo 
 E ogni diagramma sarà comparativo, conterrà cioè tutti gli andamenti di tutte le implementazioni insieme. 
 Potete quindi creare varie implementazioni, che metterete a confronto nei performance test, facendole gareggiare tra loro.
 L'obiettivo finale del progetto è arrivare alla migliore implementazione considerando tutti i test di performance (o, ove non sia possibile, solo quelli di InputRepository o OutputRepository).
+
+
+Per far girare i test (tra cui quelli di performance):
+
+mvn clean install
+
+Alla fine dell'esecuzione, dentro la cartella target ci sarà la cartella performance, contentente i file html con i risultati dei test.
