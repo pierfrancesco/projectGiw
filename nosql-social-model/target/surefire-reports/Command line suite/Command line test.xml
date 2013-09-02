@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite hostname="pierfrancescoPC" name="it.uniroma3.dia.giw.repositories.ElasticSearchInputOutputRepositoryIntegrationTestCase" tests="3" failures="0" timestamp="2 Sep 2013 17:00:56 GMT" time="563.951" errors="0">
-  <testcase name="shouldBeGreen" time="0.0" classname="it.uniroma3.dia.giw.repositories.ElasticSearchInputOutputRepositoryIntegrationTestCase"/>
-  <testcase name="assessPerformance" time="13.544" classname="it.uniroma3.dia.giw.repositories.performance.InMemoryInputOutputRepositoryPerformanceTest"/>
-  <testcase name="assessPerformance" time="521.542" classname="it.uniroma3.dia.giw.repositories.performance.ElasticSearchStoreQueryRepositoryPerformanceTest"/>
+<testsuite hostname="pierfrancescoPC" name="it.uniroma3.dia.giw.repositories.ElasticSearchInputOutputRepositoryIntegrationTestCase" tests="3" failures="0" timestamp="2 Sep 2013 17:48:50 GMT" time="302.851" errors="0">
+  <testcase name="shouldBeGreen" time="0.005" classname="it.uniroma3.dia.giw.repositories.ElasticSearchInputOutputRepositoryIntegrationTestCase"/>
+  <testcase name="assessPerformance" time="280.839" classname="it.uniroma3.dia.giw.repositories.performance.ElasticSearchStoreQueryRepositoryPerformanceTest"/>
+  <testcase name="assessPerformance" time="4.974" classname="it.uniroma3.dia.giw.repositories.performance.InMemoryInputOutputRepositoryPerformanceTest"/>
 </testsuite>

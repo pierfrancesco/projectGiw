@@ -1,0 +1,25 @@
+<html>
+<head>
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript">
+google.load("visualization", "1", {packages:["corechart"]});
+google.setOnLoadCallback(drawChart);
+function drawChart() {
+var data = google.visualization.arrayToDataTable([
+['n. of existing tweets in repository',  'InMemoryInputOutputRepositoryPerformanceTest - Get screen name occurrences', 'ElasticSearchStoreQueryRepositoryPerformanceTest - Get screen name occurrences'],
+['10', 315408, 98758682],
+['100', 180502, 6888690],
+['1000', 1133486, 11417760],
+['10000', 2083819, 37270324],
+['100000', 11623157, 170658521]]);
+var options = {title: 'Get screen name occurrences', hAxis: {title: 'n. of existing tweets in repository'}, vAxis: {title: 'Get screen name occurrences'}};
+var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+chart.draw(data, options);
+ }
+</script>
+</head>
+<body>
+<div id="chart_div" style="width: 900px; height: 500px;"></div>
+</body>
+</html>
+

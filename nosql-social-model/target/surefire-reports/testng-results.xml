@@ -2,34 +2,34 @@
 <testng-results>
   <reporter-output>
   </reporter-output>
-  <suite name="Command line suite" duration-ms="563951" started-at="2013-09-02T18:51:32Z" finished-at="2013-09-02T19:00:56Z">
+  <suite name="Command line suite" duration-ms="302851" started-at="2013-09-02T19:43:47Z" finished-at="2013-09-02T19:48:50Z">
     <groups>
     </groups>
-    <test name="Command line test" duration-ms="563951" started-at="2013-09-02T18:51:32Z" finished-at="2013-09-02T19:00:56Z">
+    <test name="Command line test" duration-ms="302851" started-at="2013-09-02T19:43:47Z" finished-at="2013-09-02T19:48:50Z">
       <class name="it.uniroma3.dia.giw.repositories.ElasticSearchInputOutputRepositoryIntegrationTestCase">
-        <test-method status="PASS" signature="initRepositories()" name="initRepositories" is-config="true" duration-ms="5803" started-at="2013-09-02T18:51:32Z" finished-at="2013-09-02T18:51:38Z">
+        <test-method status="PASS" signature="initRepositories()" name="initRepositories" is-config="true" duration-ms="5172" started-at="2013-09-02T19:43:47Z" finished-at="2013-09-02T19:43:52Z">
         </test-method>
-        <test-method status="PASS" signature="cleanIndices()" name="cleanIndices" is-config="true" duration-ms="2371" started-at="2013-09-02T18:51:38Z" finished-at="2013-09-02T18:51:41Z">
+        <test-method status="PASS" signature="cleanIndices()" name="cleanIndices" is-config="true" duration-ms="2413" started-at="2013-09-02T19:43:52Z" finished-at="2013-09-02T19:43:54Z">
         </test-method>
-        <test-method status="PASS" signature="tearDownRepositories()" name="tearDownRepositories" is-config="true" duration-ms="1517" started-at="2013-09-02T18:51:41Z" finished-at="2013-09-02T18:51:42Z">
+        <test-method status="PASS" signature="shouldBeGreen()" name="shouldBeGreen" duration-ms="5" started-at="2013-09-02T19:43:54Z" finished-at="2013-09-02T19:43:54Z">
         </test-method>
-        <test-method status="PASS" signature="shouldBeGreen()" name="shouldBeGreen" duration-ms="0" started-at="2013-09-02T18:51:41Z" finished-at="2013-09-02T18:51:41Z">
+        <test-method status="PASS" signature="tearDownRepositories()" name="tearDownRepositories" is-config="true" duration-ms="115" started-at="2013-09-02T19:43:54Z" finished-at="2013-09-02T19:43:54Z">
         </test-method>
       </class>
       <class name="it.uniroma3.dia.giw.repositories.performance.InMemoryInputOutputRepositoryPerformanceTest">
-        <test-method status="PASS" signature="assessPerformance()" name="assessPerformance" duration-ms="13544" started-at="2013-09-02T18:51:42Z" finished-at="2013-09-02T18:51:56Z">
+        <test-method status="PASS" signature="initRepositories()" name="initRepositories" is-config="true" duration-ms="6" started-at="2013-09-02T19:48:45Z" finished-at="2013-09-02T19:48:45Z">
         </test-method>
-        <test-method status="PASS" signature="initRepositories()" name="initRepositories" is-config="true" duration-ms="0" started-at="2013-09-02T18:51:42Z" finished-at="2013-09-02T18:51:42Z">
+        <test-method status="PASS" signature="assessPerformance()" name="assessPerformance" duration-ms="4974" started-at="2013-09-02T19:48:45Z" finished-at="2013-09-02T19:48:50Z">
         </test-method>
-        <test-method status="PASS" signature="tearDownRepositories()" name="tearDownRepositories" is-config="true" duration-ms="0" started-at="2013-09-02T18:51:56Z" finished-at="2013-09-02T18:51:56Z">
+        <test-method status="PASS" signature="tearDownRepositories()" name="tearDownRepositories" is-config="true" duration-ms="0" started-at="2013-09-02T19:48:50Z" finished-at="2013-09-02T19:48:50Z">
         </test-method>
       </class>
       <class name="it.uniroma3.dia.giw.repositories.performance.ElasticSearchStoreQueryRepositoryPerformanceTest">
-        <test-method status="PASS" signature="initRepositories()" name="initRepositories" is-config="true" duration-ms="5539" started-at="2013-09-02T18:51:56Z" finished-at="2013-09-02T18:52:01Z">
+        <test-method status="PASS" signature="initRepositories()" name="initRepositories" is-config="true" duration-ms="3933" started-at="2013-09-02T19:43:54Z" finished-at="2013-09-02T19:43:58Z">
         </test-method>
-        <test-method status="PASS" signature="assessPerformance()" name="assessPerformance" duration-ms="521542" started-at="2013-09-02T18:52:01Z" finished-at="2013-09-02T19:00:43Z">
+        <test-method status="PASS" signature="assessPerformance()" name="assessPerformance" duration-ms="280839" started-at="2013-09-02T19:43:58Z" finished-at="2013-09-02T19:48:39Z">
         </test-method>
-        <test-method status="PASS" signature="tearDownRepositories()" name="tearDownRepositories" is-config="true" duration-ms="13634" started-at="2013-09-02T19:00:43Z" finished-at="2013-09-02T19:00:56Z">
+        <test-method status="PASS" signature="tearDownRepositories()" name="tearDownRepositories" is-config="true" duration-ms="5382" started-at="2013-09-02T19:48:39Z" finished-at="2013-09-02T19:48:45Z">
         </test-method>
       </class>
     </test>

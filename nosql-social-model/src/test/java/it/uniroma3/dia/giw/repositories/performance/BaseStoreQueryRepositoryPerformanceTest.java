@@ -82,7 +82,7 @@ public abstract class BaseStoreQueryRepositoryPerformanceTest {
 
 
             int randomIndex = random.nextInt(xData[i] - 1);
-            //System.out.println("\n\n andomInde"+randomIndex);
+            System.out.println("\n\n andomInde"+randomIndex);
             ContextTweetId storedContextTweetId = null;
             for (int storedTweets = 0; storedTweets < xData[i]; storedTweets++) {
                 
@@ -156,8 +156,7 @@ public abstract class BaseStoreQueryRepositoryPerformanceTest {
     public void getScreenNameOccurrences() throws InputRepositoryException, IOException {
     
         DateTime startDateTime = new DateTime();
-        startDateTime.withYear(2013);
-        startDateTime.withDayOfMonth(01);
+        startDateTime.withYear(2011);
         startDateTime.withDayOfMonth(01);
         
         DateTime endDateTime = new DateTime();
@@ -435,12 +434,12 @@ public abstract class BaseStoreQueryRepositoryPerformanceTest {
     private Tweet getRandomTweet() {
     
         long id = random.nextLong();
-        DateTime dateTime = new DateTime(2013, random.nextInt(12) + 1, random.nextInt(28) + 1, 0, 0);
+        DateTime dateTime = new DateTime(2013, random.nextInt(11) + 1, random.nextInt(28) + 1, 0, 0);
         Date createdAt = dateTime.toDate();
-        String text = "§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§";
+        String text = "ciao a tutti sono dentro get random tweet";
         String source = "source";
         User user = new User(id + 1L);
-        user.setScreenName("user_" + id);
+        user.setScreenName("userCICCIOBELLO"+id);
         //System.out.println("ora sono dentro al metodo getRandomTweet");
         return new Tweet(id, createdAt, text, source, user);
     }
