@@ -451,7 +451,8 @@ public abstract class BaseStoreQueryRepositoryPerformanceTest {
  
                     try {
                  
-                        Object obj = parser.parse(new FileReader("c:\\Users\\pierfrancesco\\tweets\\tweets5.json"));
+                        Object obj = parser.parse(new FileReader("src\\test\\resources\\\\tweets\\tweets5.json"));
+                        //Object obj = parser.parse(new FileReader("c:\\Users\\pierfrancesco\\tweets\\tweets5.json"));
                  
                         jsonObject = (JSONObject) obj;
                  
