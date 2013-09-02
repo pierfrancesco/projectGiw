@@ -50,7 +50,7 @@ public abstract class BaseStoreQueryRepositoryPerformanceTest {
     private static final MonitoringActivityId MONITORING_ACTIVITY_ID = new MonitoringActivityId("1");
     
     private static final String[] Y_LABELS = new String[] { "Store one tweet", "Get tweet by id",
-            "Get screen name occurrences", "Get hashtag occurrences" ,"Pierfrancescos Test2","Pierfrancescos Test3","Pierfrancescos Test4","Pierfrancescos Test5"};
+            "Get screen name occurrences", "Get hashtag occurrences" ,"Pierfrancescos Test2","removeFollowers","storeFollowers","storeFollowing"};
     
     private static final String X_LABEL = "n. of existing tweets in repository";
     
@@ -87,7 +87,7 @@ public abstract class BaseStoreQueryRepositoryPerformanceTest {
             for (int storedTweets = 0; storedTweets < xData[i]; storedTweets++) {
                 
                 ContextTweetId contextTweetID = this.writeRepository.storeToStream(
-                        getPierfrancescoTweet(), MONITORING_ACTIVITY_ID);
+                        getRandomTweet(), MONITORING_ACTIVITY_ID);
                 //qui devo mettere no get random tweet, ma i tweet che ho preso dal repo;
                 if (storedTweets == randomIndex) {
                     storedContextTweetId = contextTweetID;
@@ -110,13 +110,13 @@ public abstract class BaseStoreQueryRepositoryPerformanceTest {
         getLogger().info(
                 "Testing performances of a repository containing " + xData[xDataIndex] + " tweets");
         
-        pierfrancescoTest5();
-        pierfrancescoTest4();
-        //pierfrancescoTest3();
-        //pierfrancescoTest2();
+        //storeFollowing();
+        //storeFollowers();
+        //removeFollowers();
+        //getFollowers();
         //storeOneTweet();
         //getTweetById(storedContextTweetId);
-        //getScreenNameOccurrences();
+        getScreenNameOccurrences();
         //getHashTagsOccurrences();
         //pierfrancescoTest();
         
@@ -168,6 +168,7 @@ public abstract class BaseStoreQueryRepositoryPerformanceTest {
             long startingTime = System.nanoTime();
             StringOccurrences stringOccurrences = this.readRepository.authorOccurrences(
                     MONITORING_ACTIVITY_ID, startDateTime, endDateTime, MAX_AUTHORS);
+            System.out.println(stringOccurrences);
             Assert.assertNotNull(stringOccurrences);
             long endingTime = System.nanoTime();
             allResults[j] = endingTime - startingTime;
@@ -212,7 +213,7 @@ public abstract class BaseStoreQueryRepositoryPerformanceTest {
         updateResults(Y_LABELS[4], allResults);
     }*/
         
-        public void pierfrancescoTest2() throws InputRepositoryException, IOException {
+        public void getFollowers() throws InputRepositoryException, IOException {
 
         System.out.println("sono in pierfrancesco2");
                  //System.out.println("\n\n\n\n\n+++++++++++++++++++++++++++\n\n");
@@ -228,7 +229,7 @@ public abstract class BaseStoreQueryRepositoryPerformanceTest {
         
         updateResults(Y_LABELS[4], allResults);
     }
-    public void pierfrancescoTest3() throws InputRepositoryException, IOException {
+    public void removeFollowers() throws InputRepositoryException, IOException {
 
         System.out.println("sono in pierfrancesco3");
                  //System.out.println("\n\n\n\n\n+++++++++++++++++++++++++++\n\n");
@@ -252,7 +253,7 @@ public abstract class BaseStoreQueryRepositoryPerformanceTest {
         
         updateResults(Y_LABELS[5], allResults);
     } 
-        public void pierfrancescoTest4() throws InputRepositoryException, IOException {
+        public void storeFollowers() throws InputRepositoryException, IOException {
 
         System.out.println("sono in pierfrancesco4");
         final User toStore = getPierfrancescoUser();
@@ -281,7 +282,7 @@ public abstract class BaseStoreQueryRepositoryPerformanceTest {
         updateResults(Y_LABELS[6], allResults);
     }   
 
-            public void pierfrancescoTest5() throws InputRepositoryException, IOException {
+            public void storeFollowing() throws InputRepositoryException, IOException {
 
         System.out.println("sono in pierfrancesco5");
         final User toStore = getPierfrancescoUser();

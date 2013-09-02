@@ -28,7 +28,7 @@ public class ElasticSearchStoreQueryRepositoryPerformanceTestNew extends
         BaseStoreQueryRepositoryPerformanceTest {
     
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(ElasticSearchStoreQueryRepositoryPerformanceTest.class);
+            .getLogger(ElasticSearchStoreQueryRepositoryPerformanceTestNew.class);
     
     private static final String ELASTIC_SEARCH_DIR = "target/elasticsearch";
     

@@ -6,12 +6,12 @@ google.load("visualization", "1", {packages:["corechart"]});
 google.setOnLoadCallback(drawChart);
 function drawChart() {
 var data = google.visualization.arrayToDataTable([
-['n. of existing tweets in repository',  'InMemoryInputOutputRepositoryPerformanceTest - Pierfrancescos Test5'],
-['10', 9203398],
-['100', 3319704],
-['1000', 1416302],
-['10000', 2090833],
-['100000', 1464208]]);
+['n. of existing tweets in repository',  'InMemoryInputOutputRepositoryPerformanceTest - Pierfrancescos Test5', 'ElasticSearchStoreQueryRepositoryPerformanceTest - Pierfrancescos Test5'],
+['10', 24425397, 104868560],
+['100', 539625, 23326727],
+['1000', 623973, 28844797],
+['10000', 1015090, 75478149],
+['100000', 548094, 15978312]]);
 var options = {title: 'Pierfrancescos Test5', hAxis: {title: 'n. of existing tweets in repository'}, vAxis: {title: 'Pierfrancescos Test5'}};
 var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
 chart.draw(data, options);
@@ -22,3 +22,4 @@ chart.draw(data, options);
 <div id="chart_div" style="width: 900px; height: 500px;"></div>
 </body>
 </html>
+
