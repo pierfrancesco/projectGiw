@@ -86,12 +86,9 @@ public abstract class BaseStoreQueryRepositoryPerformanceTest {
             ContextTweetId storedContextTweetId = null;
             for (int storedTweets = 0; storedTweets < xData[i]; storedTweets++) {
                 
-                /*System.out.println("Sono DENTRO a BaseStoreQueryRepositoryPerformanceTest");
-                System.out.println(this);*/
-
                 ContextTweetId contextTweetID = this.writeRepository.storeToStream(
-                        getRandomTweet(), MONITORING_ACTIVITY_ID);
-                    //, MONITORING_ACTIVITY_ID);
+                        getPierfrancescoTweet(), MONITORING_ACTIVITY_ID);
+                //qui devo mettere no get random tweet, ma i tweet che ho preso dal repo;
                 if (storedTweets == randomIndex) {
                     storedContextTweetId = contextTweetID;
                 }
@@ -454,7 +451,7 @@ public abstract class BaseStoreQueryRepositoryPerformanceTest {
  
                     try {
                  
-                        Object obj = parser.parse(new FileReader("c:\\Users\\pierfrancesco\\tweets0.json"));
+                        Object obj = parser.parse(new FileReader("c:\\Users\\pierfrancesco\\tweets\\tweets5.json"));
                  
                         jsonObject = (JSONObject) obj;
                  
