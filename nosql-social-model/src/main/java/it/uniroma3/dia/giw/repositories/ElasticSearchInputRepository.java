@@ -11,12 +11,15 @@ import it.uniroma3.dia.giw.model.monitoring.MonitoringActivityId;
 import it.uniroma3.dia.giw.model.twitter.call.TwitterAPIMethod;
 import it.uniroma3.dia.giw.model.twitter.data.Tweet;
 import it.uniroma3.dia.giw.model.twitter.data.User;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
+import java.util.Map;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.elasticsearch.ElasticSearchException;
@@ -30,10 +33,15 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.indices.IndexMissingException;
 import org.elasticsearch.node.Node;
+import org.elasticsearch.search.*;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.common.io.stream.Streamable;
+import org.elasticsearch.common.xcontent.ToXContent;
 import org.joda.time.DateTime;
+import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 public class ElasticSearchInputRepository implements InputRepository {
     
@@ -56,20 +64,27 @@ public class ElasticSearchInputRepository implements InputRepository {
     private final Client client;
     
     private final ObjectMapper mapper;
+
+    protected InputRepository writeRepository;
     
     @Inject
     public ElasticSearchInputRepository(final Node node, final ObjectMapper objectMapper) {
     
         this.client = node.client();
         this.mapper = objectMapper;
+        //System.out.println("THIS CLIENT"+this.client);
     }
     
     public void storeToStream(List<Tweet> tweets, MonitoringActivityId monitoringActivityId)
             throws InputRepositoryException {
     
         final List<ContextTweetId> savedIds = new ArrayList<ContextTweetId>();
+        StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+        //System.out.println("STAK TRACE__________________________"+stackTraceElements[1]);
         
         for (final Tweet tweet : tweets) {
+            System.out.println("Sono DENTRO a ElasticSearchInputRepository con la lista che gli viene passata ***************** ");
+                //System.out.println(this);
             final ContextTweetId savedId = storeToStream(tweet, monitoringActivityId);
             // TODO manage exceptions
             savedIds.add(savedId);
@@ -83,7 +98,7 @@ public class ElasticSearchInputRepository implements InputRepository {
     
     public ContextTweetId storeToStream(Tweet tweet, MonitoringActivityId monitoringActivityId)
             throws InputRepositoryException {
-    
+        //System.out.println("Ho chiamto lo storeStream di ElasticSearch");
         final DateTime createdAt = new DateTime(tweet.getCreatedAt());
         final int dayOfTheYear = createdAt.getDayOfYear();
         final int year = createdAt.getYear();
@@ -96,9 +111,14 @@ public class ElasticSearchInputRepository implements InputRepository {
         final String contextTweetJson = serializeContextTweet(contextTweet);
         
         LOGGER.debug("Storing context tweet: " + contextTweetJson);
+        //System.out.println("IL JSON"+contextTweetJson);
+
         
         IndexResponse indexResponse = null;
         try {
+            //System.out.println("qui dentro sei arrivato");
+            //System.out.println(contextTweetId.getId());
+
             indexResponse = client
                     .prepareIndex(DATABASE_NAME, CONTEXT_TWEET_TYPE, contextTweetId.getId())
                     .setSource(contextTweetJson).execute().actionGet();
@@ -207,12 +227,130 @@ public class ElasticSearchInputRepository implements InputRepository {
     
         // To change body of implemented methods use File | Settings | File
         // Templates.
+                final String newTitle = "";
+
+        this.client.prepareUpdate("twitter", "friends", user.getScreenName()) 
+                    .setScript("ctx._source.list=\"" + newTitle + "\"") 
+                    .execute() 
+                    .actionGet(); 
     }
     
     public void removeFollowers(User user) throws InputRepositoryException {
+
+
+        //Questo metodo aggiorna dopo che ho fatto store follower
+        /*SearchResponse response1 = this.client.prepareSearch("twitter").setTypes("followers").setSize(1).execute().actionGet();
+        System.out.println("Sto stampando da dentro l'iterator"+ response1);
+
+                    try
+            {
+               
+                Thread.sleep(1000);
+            } catch (InterruptedException ie)
+            {
+                ie.printStackTrace();
+            }*/
+
+        final String newTitle = "";
+
+        this.client.prepareUpdate("twitter", "followers", user.getScreenName()) 
+                    .setScript("ctx._source.list=\"" + newTitle + "\"") 
+                    .execute() 
+                    .actionGet(); 
     
-        // To change body of implemented methods use File | Settings | File
-        // Templates.
+
+        //SearchResponse response = this.client.prepareSearch("twitter").setTypes("followers").setQuery(QueryBuilders.termQuery("_id", user.getScreenName())).setSize(1).execute().actionGet();
+        //SearchResponse response = this.client.prepareSearch("twitter").setTypes("followers").setSize(1).execute().actionGet();
+        //System.out.println("Sto stampando da dentro l'iterator"+ response);
+
+        /*QUI CANCELLO IL TWEET E LO RIMETTO PRIVO DELLA LISTA DEI FOLLOWER
+        IL METODO VA PERFEZIONATO CON L'UTILIZZO DI UPDATE.
+        */
+        /*SearchResponse response = this.client.prepareSearch("twitter").setQuery(QueryBuilders.termQuery("screenName", user.getScreenName())).setSize(1).execute().actionGet();
+
+       final Iterator<SearchHit> resultsIterator = response.getHits().iterator();
+       String currentElement = "";
+            final ArrayList<User> emptyUser = new ArrayList<User>(0);
+            final Tweet toStore = new Tweet();
+            ContextTweet deserialized = new ContextTweet();
+            String monitoringActivityIdtoStore = "";
+            while (resultsIterator.hasNext()) {
+            //System.out.println("Sto stampando da dentro l'iterator");
+            final SearchHit currentResult = resultsIterator.next();
+            currentElement = currentResult.getId();
+            final String jsonContextTweet = currentResult.getSourceAsString();
+            deserialized = deserializeContextTweet(jsonContextTweet);
+            monitoringActivityIdtoStore = deserialized.getMonitoringActivityId();
+            final Tweet tweeet = deserialized.getTweet();
+            final User useer = tweeet.getUser();
+            final long idd = tweeet.getId();
+            final String text = tweeet.getText();
+            final String source = tweeet.getSource();
+            final Date createdAt = tweeet.getCreatedAt();
+            //System.out.println("Sto stampando il numero degli user PRIMA"+useer.getFollowers());
+            useer.setFollowers(emptyUser);
+            //System.out.println("Sto stampando il numero degli user DOPO"+useer.getFollowers());
+            //qui ora devo ricreare il tweet privo di tutti i followers e poi risalvarlo;
+            toStore.setUser(useer);
+            toStore.setId(idd);
+            toStore.setText(text);
+            toStore.setSource(source);
+            toStore.setCreatedAt(createdAt);
+            //System.out.println("Sto stampando IDDDDDDDDDDDDD "+currentElement);
+            final DateTime createdAt2 = new DateTime(toStore.getCreatedAt());
+            final int dayOfTheYear = createdAt2.getDayOfYear();
+            final int year = createdAt2.getYear();
+            
+            final String generatedId = UUID.randomUUID().toString();
+            final ContextTweetId contextTweetId = new ContextTweetId(generatedId);
+            
+            final String contextTweetJson = serializeContextTweet(deserialized);
+            //this.client.prepareUpdate("twitter", "contex_tweet", currentElement).addScriptParam("contextTweetJson", contextTweetJson).setScript("ctx._source = contextTweetJson").execute().actionGet();
+            
+            final DeleteByQueryResponse usersResponse = client.prepareDeleteByQuery(DATABASE_NAME)
+                        .setQuery(QueryBuilders.matchAllQuery()).setTypes(CONTEXT_TWEET_TYPE).execute()
+                        .actionGet();
+            try
+            {
+               
+                Thread.sleep(1000);
+            } catch (InterruptedException ie)
+            {
+                ie.printStackTrace();
+            }
+        IndexResponse indexResponse = null;
+        try {
+            
+            //System.out.println(contextTweetId.getId());
+
+            indexResponse = client
+                    .prepareIndex(DATABASE_NAME, CONTEXT_TWEET_TYPE, contextTweetId.getId())
+                    .setSource(contextTweetJson).execute().actionGet();
+        } catch (ElasticSearchException e) {
+            System.out.println("ERRORE");
+
+        }
+
+        }
+        
+
+        /*try
+            {
+               
+                Thread.sleep(1000);
+            } catch (InterruptedException ie)
+            {
+                ie.printStackTrace();
+            }
+                    SearchResponse response2 = this.client.prepareSearch().setQuery(QueryBuilders.termQuery("screenName", user.getScreenName())).setSize(1).execute().actionGet();
+                    final Iterator<SearchHit> resultsIterator2 = response2.getHits().iterator();
+                    System.out.println("qui dentro sei arrivato");
+                                        while (resultsIterator2.hasNext()) {
+                                final SearchHit currentResult = resultsIterator2.next();
+                                final String jsonContextTweet = currentResult.getSourceAsString();
+                                System.out.println("Sto stampando il XXXXXXXXXXXXXXXXXXXXXXX "+response2);
+                                //this.client.prepareUpdate("twitter", "contex_tweet", currentElement).setScript("ctx._source.place=ITALIA").execute().actionGet();
+                            }*/
     }
     
     @Deprecated
@@ -291,26 +429,199 @@ public class ElasticSearchInputRepository implements InputRepository {
     
     public PageId storeFollowing(long[] followingIds, User user, DateTime startedAt,
             DateTime finishedAt) throws InputRepositoryException {
-    
-        throw new UnsupportedOperationException("NIY");
+                String followersJson = "";
+                final String screenName = user.getScreenName();
+        try {
+            followersJson = this.mapper.writeValueAsString(followingIds);
+        } catch (final Exception e) {
+            final String emsg = "cant serialise json from context tweet '" + followersJson + "'";
+            throw new InputRepositoryException(emsg, e);
+        }
+        IndexResponse indexResponse = null;
+
+        try {
+             
+             String toPass = "{\"list\":"+followersJson+"}";
+             //System.out.println(toPass);
+            indexResponse = client
+                    .prepareIndex(DATABASE_NAME, "friends", String.valueOf(user.getScreenName()))
+                    .setSource(toPass).execute().actionGet();
+        } catch (ElasticSearchException e) {
+            System.out.println("ERRORE"+e);
+
+        }
+                   /*try
+            {
+               
+                Thread.sleep(10000);
+            } catch (InterruptedException ie)
+            {
+                ie.printStackTrace();
+            }
+                           SearchResponse response = client.prepareSearch("twitter").setTypes("friends").execute().actionGet();
+       final Iterator<SearchHit> resultsIterator = response.getHits().iterator();
+       while (resultsIterator.hasNext()) {
+                                final SearchHit currentResult = resultsIterator.next();
+                                final String jsonContextTweet = currentResult.getSourceAsString();
+                                System.out.println("Sto stampando il XXXXXXXXXXXXXXXXXXXXXXX "+response);
+                            }*/
+
+
+        PageId _id = new PageId(String.valueOf(user.getId()));
+        return _id;
+
     }
     
     public PageId storeFollowers(long[] followerIds, User user, DateTime startTime, DateTime endTime)
+
             throws InputRepositoryException {
-    
-        throw new UnsupportedOperationException("NIY");
+                String followersJson = "";
+                final String screenName = user.getScreenName();
+        try {
+            followersJson = this.mapper.writeValueAsString(followerIds);
+        } catch (final Exception e) {
+            final String emsg = "cant serialise json from context tweet '" + followersJson + "'";
+            throw new InputRepositoryException(emsg, e);
+        }
+        IndexResponse indexResponse = null;
+
+        try {
+             
+             String toPass = "{\"list\":"+followersJson+"}";
+             //System.out.println(toPass);
+            indexResponse = client
+                    .prepareIndex(DATABASE_NAME, "followers", String.valueOf(user.getScreenName()))
+                    .setSource(toPass).execute().actionGet();
+        } catch (ElasticSearchException e) {
+            System.out.println("ERRORE"+e);
+
+        }
+                   /* 
+                    questa parte serve a mostrare che li ha effettivamente inseriti
+                   try
+            {
+               
+                Thread.sleep(10000);
+            } catch (InterruptedException ie)
+            {
+                ie.printStackTrace();
+            }
+                           SearchResponse response = client.prepareSearch().execute().actionGet();
+       final Iterator<SearchHit> resultsIterator = response.getHits().iterator();
+       while (resultsIterator.hasNext()) {
+                                final SearchHit currentResult = resultsIterator.next();
+                                final String jsonContextTweet = currentResult.getSourceAsString();
+                                System.out.println("Sto stampando il XXXXXXXXXXXXXXXXXXXXXXX "+response);
+                            }*/
+
+
+        PageId _id = new PageId(String.valueOf(user.getId()));
+        return _id;
     }
     
-    public long[] getFollowers(String screenName) {
-    
-        // TODO Auto-generated method stub
-        return null;
+    public long[] getFollowers(String screenName) throws InputRepositoryException{
+
+                //questo è il metodo vecchio che esamina la stuttura classica di ogni tweet e ne estrae la lista dei follower.
+                // è possibile fare un benchmark fra i 2 metodi
+        
+       /*SearchResponse response = this.client.prepareSearch().setQuery(QueryBuilders.termQuery("screenName", screenName)).setSize(1).execute().actionGet();
+       final Iterator<SearchHit> resultsIterator = response.getHits().iterator();
+            ArrayList<Long> idss = new ArrayList<Long>();
+            while (resultsIterator.hasNext()) {
+            final SearchHit currentResult = resultsIterator.next();
+            final String jsonContextTweet = currentResult.getSourceAsString();
+            final ContextTweet deserialized = deserializeContextTweet(jsonContextTweet);
+            final Tweet tweeet = deserialized.getTweet();
+            final User useer = tweeet.getUser();
+            final ArrayList<User> follower = (ArrayList<User>) useer.getFollowers();
+            
+            for(User s : follower){
+                
+                idss.add(s.getId());
+            }
+            
+        }
+        
+        //String name = response.toString();
+        long[] result = new long[idss.size()];
+        int t=0;
+          for(long s : idss){
+                
+                result[t] = s;
+                t++;
+            }
+        
+       //System.out.println("********************\n\n"+result);
+
+        
+        return result;*/
+
+        //da qui inizia la versione che prende il documento salvato dal test pierfrancesco 4. Questo test salva in maniera ad hoc i followers per ogni utente
+        //in modo da facilitarne l'estrazione.
+                   /*try
+            {
+               
+                Thread.sleep(1000);
+            } catch (InterruptedException ie)
+            {
+                ie.printStackTrace();
+            }*/
+
+        SearchResponse response = client.prepareSearch("twitter").setTypes("followers").setQuery(QueryBuilders.termQuery("_id", screenName)).setSize(1).execute().actionGet();
+       final Iterator<SearchHit> resultsIterator = response.getHits().iterator();
+       //ArrayList<Long> temp = new ArrayList<Long>();
+       ArrayList<Long> idss = new ArrayList<Long>();
+       JSONObject json = new JSONObject();
+       System.out.println(response);
+       while (resultsIterator.hasNext()) {
+                                final SearchHit currentResult = resultsIterator.next();
+                                final String jsonContextTweet = currentResult.getSourceAsString();
+                                        try {
+                                            JSONObject resultJSON = this.mapper.readValue(jsonContextTweet, JSONObject.class);
+                                            idss = (ArrayList<Long>)resultJSON.get("list") ;
+                                    } catch (final Exception e) {System.out.println(e);}
+
+                                
+                            }
+                                    long[] id = new long[idss.size()];
+                                          for(int t=0; t < idss.size() ;t++){
+                                                
+                                                Long l = Long.parseLong(String.valueOf(idss.get(t)));
+                                                id[t] = l;
+                                            }
+                            
+
+                            return id ;
+
     }
     
     public long[] getFollowing(String screenName) {
     
-        // TODO Auto-generated method stub
-        return null;
+        SearchResponse response = client.prepareSearch("twitter").setTypes("friends").setQuery(QueryBuilders.termQuery("_id", screenName)).setSize(1).execute().actionGet();
+       final Iterator<SearchHit> resultsIterator = response.getHits().iterator();
+       //ArrayList<Long> temp = new ArrayList<Long>();
+       ArrayList<Long> idss = new ArrayList<Long>();
+       JSONObject json = new JSONObject();
+       System.out.println(response);
+       while (resultsIterator.hasNext()) {
+                                final SearchHit currentResult = resultsIterator.next();
+                                final String jsonContextTweet = currentResult.getSourceAsString();
+                                        try {
+                                            JSONObject resultJSON = this.mapper.readValue(jsonContextTweet, JSONObject.class);
+                                            idss = (ArrayList<Long>)resultJSON.get("list") ;
+                                    } catch (final Exception e) {System.out.println(e);}
+
+                                
+                            }
+                                    long[] id = new long[idss.size()];
+                                          for(int t=0; t < idss.size() ;t++){
+                                                
+                                                Long l = Long.parseLong(String.valueOf(idss.get(t)));
+                                                id[t] = l;
+                                            }
+                            
+
+                            return id ;
     }
     
     public TimedValue getTimedCount(long userId, TwitterAPIMethod externalMethod) {

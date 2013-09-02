@@ -44,7 +44,7 @@ public interface InputRepository {
     
     void shutDownRepository();
     
-    long[] getFollowers(String screenName);
+    long[] getFollowers(String screenName) throws InputRepositoryException;
     
     long[] getFollowing(String screenName);
     

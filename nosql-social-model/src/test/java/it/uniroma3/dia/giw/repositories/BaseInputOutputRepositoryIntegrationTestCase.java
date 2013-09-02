@@ -16,15 +16,28 @@ import it.uniroma3.dia.giw.model.twitter.data.HashTag;
 import it.uniroma3.dia.giw.model.twitter.data.Tweet;
 import it.uniroma3.dia.giw.model.twitter.data.Url;
 import it.uniroma3.dia.giw.model.twitter.data.User;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Iterator;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
+import java.util.LinkedList;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.testng.annotations.Test;
+
+import com.google.gson.Gson;
 
 public abstract class BaseInputOutputRepositoryIntegrationTestCase {
     
@@ -42,7 +55,7 @@ public abstract class BaseInputOutputRepositoryIntegrationTestCase {
     
     protected abstract void cleanIndices() throws Exception;
     
-    @Test(enabled = true)
+    /*@Test(enabled = true)
     public void shouldCRDSomeTweets() throws InputRepositoryException {
     
         final MonitoringActivityId monitoringActivityId = new MonitoringActivityId("123");
@@ -74,9 +87,82 @@ public abstract class BaseInputOutputRepositoryIntegrationTestCase {
         this.writeRepository.removeStream(monitoringActivityId);
         final ContextTweet deletedTweet = this.writeRepository.getByIdFromStream(contextTweetId);
         assertNull(deletedTweet);
-    }
+    }*/
+
+   /* @Test(enabled = true)
+        public void pierfrancesco() throws InputRepositoryException {
+            /*int i = 0;
+            final MonitoringActivityId monitoringActivityId = new MonitoringActivityId("123");
+            final List<Tweet> twlist = new ArrayList<Tweet>(); 
+
+            while(i < 10){
+                i++;
+                
+                final Tweet tweet = new Tweet();
+                        String expectedTweetText = "Example tweet text";
+                        tweet.setText(expectedTweetText);
+                        tweet.setCreatedAt(new Date(new DateTime(0).getMillis()));
+                        tweet.setSource("Example source");
+                        System.out.println("Ciao");
+                        User obama = new User(2L);
+                        obama.setName("Barack"+i);
+                        obama.setScreenName("Barack"+i);
+                        
+                        tweet.setUser(obama);
+                        twlist.add(tweet);
+
+
+            }
+            //final MonitoringActivityId monitoringActivityId = this.writeRepository.storeToStream(twlist,monitoringActivityId);
+            this.writeRepository.storeToStream(twlist, monitoringActivityId);
+            System.out.println("\n\n"+twlist+"\n\n");
+                    JSONParser parser = new JSONParser();
+                    JSONObject jsonObject = new JSONObject();
+ 
+                    try {
+                 
+                        Object obj = parser.parse(new FileReader("c:\\Users\\pierfrancesco\\tweets0.json"));
+                 
+                        jsonObject = (JSONObject) obj;
+                 
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                     
+
+            final MonitoringActivityId monitoringActivityId = new MonitoringActivityId("123");
+            System.out.println("sono in pierfrancesco");
+            //JSONObject tweetExternal = giveMeTweets();
+            Long id = (Long) jsonObject.get("id");
+            final Tweet tweet = new Tweet();
+            tweet.setId(id);
+            final DateTime now = new DateTime();
+        final DateTime yesterday = now.minusDays(1);
+        tweet.setCreatedAt(new Date(now.getMillis()));
+
+        final String barackScreenName = "Barack";
+        final String michelleScreenName = "michelle";
+        
+        final User barack = new User();
+        barack.setScreenName(barackScreenName);
+        tweet.setUser(barack);
+            
+            this.writeRepository.storeToStream(tweet, monitoringActivityId);
+            System.out.println("\n\n"+jsonObject+"\n\n");
+        final int one = 1;
+        final StringOccurrences authorOccurrences = this.readRepository.authorOccurrences(
+                monitoringActivityId, yesterday, now, one);
+        //System.out.println("\nAUTHOROCCURENXWE\n"+authorOccurrences+"\n\n");
+        final Map<String, Integer> occurrences = authorOccurrences.getOccurrences();
+        System.out.println("\nAUTHOROCCURENXWE\n"+authorOccurrences+"\n\n");
+    }*/
+
     
-    @Test(enabled = true)
+    /*@Test(enabled = false)
     public void shouldStoreStreamAndThenQuery() throws InputRepositoryException {
     
         // screenNames
@@ -104,7 +190,7 @@ public abstract class BaseInputOutputRepositoryIntegrationTestCase {
         tweets.add(firstTweet);
         tweets.add(secondTweet);
         
-        final MonitoringActivityId monitoringActivityId = new MonitoringActivityId("123");
+        /*final MonitoringActivityId monitoringActivityId = new MonitoringActivityId("123");
         this.writeRepository.storeToStream(tweets, monitoringActivityId);
         
         final int two = 2;
@@ -209,6 +295,7 @@ public abstract class BaseInputOutputRepositoryIntegrationTestCase {
         // end prepare data
         
         // store
+
         this.writeRepository.storeToStream(theTweets, monitoringActivityId);
         
         // store _same_ tweets to other monitoring activity
@@ -396,5 +483,5 @@ public abstract class BaseInputOutputRepositoryIntegrationTestCase {
             otherMonitoringActivityId = new MonitoringActivityId("456");
             return this;
         }
-    }
+    }*/
 }

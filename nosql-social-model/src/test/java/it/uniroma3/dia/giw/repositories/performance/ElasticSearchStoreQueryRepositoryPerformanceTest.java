@@ -51,6 +51,8 @@ public class ElasticSearchStoreQueryRepositoryPerformanceTest extends
         
         final String dataPath = elasticSearchPath + "data";
         final String clusterName = "es";
+
+        System.out.println("PROVA2");
         
         if (this.localNode == null) {
             

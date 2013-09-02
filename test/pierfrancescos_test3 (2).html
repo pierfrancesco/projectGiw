@@ -1,0 +1,25 @@
+<html>
+<head>
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript">
+google.load("visualization", "1", {packages:["corechart"]});
+google.setOnLoadCallback(drawChart);
+function drawChart() {
+var data = google.visualization.arrayToDataTable([
+['n. of existing tweets in repository',  'InMemoryInputOutputRepositoryPerformanceTest - Pierfrancescos Test3', 'ElasticSearchStoreQueryRepositoryPerformanceTest - Pierfrancescos Test3'],
+['10', 5902, 323399741],
+['100', 3421, 239897019],
+['1000', 3250, 243131691],
+['10000', 3165, 273022119],
+['100000', 2908, 457199329]]);
+var options = {title: 'Pierfrancescos Test3', hAxis: {title: 'n. of existing tweets in repository'}, vAxis: {title: 'Pierfrancescos Test3'}};
+var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+chart.draw(data, options);
+ }
+</script>
+</head>
+<body>
+<div id="chart_div" style="width: 900px; height: 500px;"></div>
+</body>
+</html>
+

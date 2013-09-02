@@ -8,6 +8,13 @@ import it.uniroma3.dia.giw.model.StringOccurrences;
 import it.uniroma3.dia.giw.model.monitoring.MonitoringActivityId;
 import it.uniroma3.dia.giw.model.twitter.data.Tweet;
 import it.uniroma3.dia.giw.model.twitter.data.User;
+import java.io.FileNotFoundException;
+import java.util.Iterator;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -18,6 +25,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.ArrayList;
 
 import org.elasticsearch.common.collect.Lists;
 import org.elasticsearch.common.collect.Maps;
@@ -25,6 +33,7 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
 
 public abstract class BaseStoreQueryRepositoryPerformanceTest {
     
@@ -41,7 +50,7 @@ public abstract class BaseStoreQueryRepositoryPerformanceTest {
     private static final MonitoringActivityId MONITORING_ACTIVITY_ID = new MonitoringActivityId("1");
     
     private static final String[] Y_LABELS = new String[] { "Store one tweet", "Get tweet by id",
-            "Get screen name occurrences", "Get hashtag occurrences" };
+            "Get screen name occurrences", "Get hashtag occurrences" ,"Pierfrancescos Test2","Pierfrancescos Test3","Pierfrancescos Test4","Pierfrancescos Test5"};
     
     private static final String X_LABEL = "n. of existing tweets in repository";
     
@@ -67,14 +76,22 @@ public abstract class BaseStoreQueryRepositoryPerformanceTest {
     @Test
     public void assessPerformance() throws InputRepositoryException, IOException {
     
+        System.out.println("Prova1");
         for (int i = 0; i < xData.length; i++) {
             
+
+
             int randomIndex = random.nextInt(xData[i] - 1);
+            //System.out.println("\n\n andomInde"+randomIndex);
             ContextTweetId storedContextTweetId = null;
             for (int storedTweets = 0; storedTweets < xData[i]; storedTweets++) {
                 
+                /*System.out.println("Sono DENTRO a BaseStoreQueryRepositoryPerformanceTest");
+                System.out.println(this);*/
+
                 ContextTweetId contextTweetID = this.writeRepository.storeToStream(
                         getRandomTweet(), MONITORING_ACTIVITY_ID);
+                    //, MONITORING_ACTIVITY_ID);
                 if (storedTweets == randomIndex) {
                     storedContextTweetId = contextTweetID;
                 }
@@ -84,7 +101,7 @@ public abstract class BaseStoreQueryRepositoryPerformanceTest {
         }
         
         for (String testLabel : results.keySet()) {
-            
+            //System.out.println("\n\n\nora sono qui dentro\n\n\n"+testLabel);
             storeVisualization(results.get(testLabel), X_LABEL, testLabel, testLabel, testLabel
                     .toLowerCase().replace(" ", "_"));
         }
@@ -96,10 +113,17 @@ public abstract class BaseStoreQueryRepositoryPerformanceTest {
         getLogger().info(
                 "Testing performances of a repository containing " + xData[xDataIndex] + " tweets");
         
-        storeOneTweet();
-        getTweetById(storedContextTweetId);
-        getScreenNameOccurrences();
-        getHashTagsOccurrences();
+        pierfrancescoTest5();
+        pierfrancescoTest4();
+        //pierfrancescoTest3();
+        //pierfrancescoTest2();
+        //storeOneTweet();
+        //getTweetById(storedContextTweetId);
+        //getScreenNameOccurrences();
+        //getHashTagsOccurrences();
+        //pierfrancescoTest();
+        
+        
     }
     
     public void storeOneTweet() throws InputRepositoryException, IOException {
@@ -177,7 +201,117 @@ public abstract class BaseStoreQueryRepositoryPerformanceTest {
         
         updateResults(Y_LABELS[3], allResults);
     }
+        /*public void pierfrancescoTest() throws InputRepositoryException, IOException {
     
+        long[] allResults = new long[iterations];
+        for (int j = 0; j < iterations; j++) {
+            
+            long startingTime = System.nanoTime();
+            this.writeRepository.storeToStream(getPierfrancescoTweet(), MONITORING_ACTIVITY_ID);
+            long endingTime = System.nanoTime();
+            allResults[j] = endingTime - startingTime;
+        }
+        
+        updateResults(Y_LABELS[4], allResults);
+    }*/
+        
+        public void pierfrancescoTest2() throws InputRepositoryException, IOException {
+
+        System.out.println("sono in pierfrancesco2");
+                 //System.out.println("\n\n\n\n\n+++++++++++++++++++++++++++\n\n");
+        this.writeRepository.storeToStream(getPierfrancescoTweet(), MONITORING_ACTIVITY_ID);
+        long[] allResults = new long[iterations];
+        for (int j = 0; j < iterations; j++) {
+        long startingTime = System.nanoTime();
+        this.writeRepository.getFollowers("pierfrancesco");
+        //System.out.println("result di ids"+ids[0]);
+        long endingTime = System.nanoTime();
+        allResults[j] = endingTime - startingTime;
+        }
+        
+        updateResults(Y_LABELS[4], allResults);
+    }
+    public void pierfrancescoTest3() throws InputRepositoryException, IOException {
+
+        System.out.println("sono in pierfrancesco3");
+                 //System.out.println("\n\n\n\n\n+++++++++++++++++++++++++++\n\n");
+        final User toDelete = getPierfrancescoUser();
+        this.writeRepository.storeToStream(getPierfrancescoTweet(), MONITORING_ACTIVITY_ID);
+                 try
+            {
+               
+                Thread.sleep(1000);
+            } catch (InterruptedException ie)
+            {
+                ie.printStackTrace();
+            }
+        long[] allResults = new long[iterations];
+        for (int j = 0; j < iterations; j++) {
+        long startingTime = System.nanoTime();
+        this.writeRepository.removeFollowers(toDelete);
+        long endingTime = System.nanoTime();
+        allResults[j] = endingTime - startingTime;
+        }
+        
+        updateResults(Y_LABELS[5], allResults);
+    } 
+        public void pierfrancescoTest4() throws InputRepositoryException, IOException {
+
+        System.out.println("sono in pierfrancesco4");
+        final User toStore = getPierfrancescoUser();
+        long[] allResults = new long[iterations];
+        DateTime startDateTime = new DateTime();
+        startDateTime.withYear(2013);
+        startDateTime.withDayOfMonth(01);
+        startDateTime.withDayOfMonth(01);
+                            try
+            {
+               
+                Thread.sleep(1000);
+            } catch (InterruptedException ie)
+            {
+                ie.printStackTrace();
+            }
+        
+        DateTime endDateTime = new DateTime();
+        for (int j = 0; j < iterations; j++) {
+        long startingTime = System.nanoTime();
+        this.writeRepository.storeFollowers(getPierfrancescoFollower(), toStore, startDateTime, endDateTime);
+        long endingTime = System.nanoTime();
+        allResults[j] = endingTime - startingTime;
+        }
+        
+        updateResults(Y_LABELS[6], allResults);
+    }   
+
+            public void pierfrancescoTest5() throws InputRepositoryException, IOException {
+
+        System.out.println("sono in pierfrancesco5");
+        final User toStore = getPierfrancescoUser();
+        long[] allResults = new long[iterations];
+        DateTime startDateTime = new DateTime();
+        startDateTime.withYear(2013);
+        startDateTime.withDayOfMonth(01);
+        startDateTime.withDayOfMonth(01);
+                            try
+            {
+               
+                Thread.sleep(1000);
+            } catch (InterruptedException ie)
+            {
+                ie.printStackTrace();
+            }
+        
+        DateTime endDateTime = new DateTime();
+        for (int j = 0; j < iterations; j++) {
+        long startingTime = System.nanoTime();
+        this.writeRepository.storeFollowing(getPierfrancescoFollowing(), toStore, startDateTime, endDateTime);
+        long endingTime = System.nanoTime();
+        allResults[j] = endingTime - startingTime;
+        }
+        
+        updateResults(Y_LABELS[7], allResults);
+    }   
     private void updateResults(String yLabel, long[] allResults) {
     
         List<Long> currentResults = results.get(yLabel);
@@ -305,11 +439,176 @@ public abstract class BaseStoreQueryRepositoryPerformanceTest {
         long id = random.nextLong();
         DateTime dateTime = new DateTime(2013, random.nextInt(12) + 1, random.nextInt(28) + 1, 0, 0);
         Date createdAt = dateTime.toDate();
-        String text = "tweet text relative to tweet with id = " + id;
+        String text = "§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§";
         String source = "source";
         User user = new User(id + 1L);
         user.setScreenName("user_" + id);
+        //System.out.println("ora sono dentro al metodo getRandomTweet");
         return new Tweet(id, createdAt, text, source, user);
+    }
+
+        private Tweet getPierfrancescoTweet() {
+
+                    JSONParser parser = new JSONParser();
+                    JSONObject jsonObject = new JSONObject();
+ 
+                    try {
+                 
+                        Object obj = parser.parse(new FileReader("c:\\Users\\pierfrancesco\\tweets0.json"));
+                 
+                        jsonObject = (JSONObject) obj;
+                 
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+    
+        long id =  (Long) jsonObject.get("id");
+        JSONObject userTemp = (JSONObject) jsonObject.get("user");
+        ArrayList<User> users = new ArrayList<User>();
+        JSONArray followers = (JSONArray) userTemp.get("followers");
+        for (int k = 0; k < followers.size(); k++) {
+        JSONObject tempUser = (JSONObject)followers.get(k);
+        long ids =  (Long) tempUser.get("id");
+        String screenName = (String) tempUser.get("screenName");
+        User tempUserUser = new User();
+        tempUserUser.setScreenName(screenName);
+        tempUserUser.setId(ids);
+        users.add(tempUserUser);
+            }
+
+        DateTime dateTime = new DateTime(2013, random.nextInt(12) + 1, random.nextInt(28) + 1, 0, 0);
+        Date createdAt = dateTime.toDate();
+        String text = (String) jsonObject.get("text");
+        String source = "source";
+        User user = new User();
+        user.setScreenName("pierfrancesco");
+        user.setFollowers(users);
+        //System.out.println("ora sono dentro al metodo getRandomTweet");
+        return new Tweet(id, createdAt, text, source, user);
+    }
+            private User getPierfrancescoUser() {
+
+                    JSONParser parser = new JSONParser();
+                    JSONObject jsonObject = new JSONObject();
+ 
+                    try {
+                 
+                        Object obj = parser.parse(new FileReader("c:\\Users\\pierfrancesco\\tweets0.json"));
+                 
+                        jsonObject = (JSONObject) obj;
+                 
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+    
+        long id =  (Long) jsonObject.get("id");
+        JSONObject userTemp = (JSONObject) jsonObject.get("user");
+        ArrayList<User> users = new ArrayList<User>();
+        JSONArray followers = (JSONArray) userTemp.get("followers");
+        for (int k = 0; k < followers.size(); k++) {
+        JSONObject tempUser = (JSONObject)followers.get(k);
+        long ids =  (Long) tempUser.get("id");
+        String screenName = (String) tempUser.get("screenName");
+        User tempUserUser = new User();
+        tempUserUser.setScreenName(screenName);
+        tempUserUser.setId(ids);
+        users.add(tempUserUser);
+            }
+
+        DateTime dateTime = new DateTime(2013, random.nextInt(12) + 1, random.nextInt(28) + 1, 0, 0);
+        Date createdAt = dateTime.toDate();
+        String text = (String) jsonObject.get("text");
+        String source = "source";
+        User user = new User();
+        user.setScreenName("pierfrancesco");
+        user.setFollowers(users);
+        //System.out.println("ora sono dentro al metodo getRandomTweet");
+        return user;
+    }
+            private long[] getPierfrancescoFollower() {
+
+                    JSONParser parser = new JSONParser();
+                    JSONObject jsonObject = new JSONObject();
+ 
+                    try {
+                 
+                        Object obj = parser.parse(new FileReader("c:\\Users\\pierfrancesco\\tweets0.json"));
+                 
+                        jsonObject = (JSONObject) obj;
+                 
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+    
+        long id =  (Long) jsonObject.get("id");
+        JSONObject userTemp = (JSONObject) jsonObject.get("user");
+        ArrayList<User> users = new ArrayList<User>();
+        
+        JSONArray followers = (JSONArray) userTemp.get("followers");
+        long[] listId = new long[followers.size()];
+        for (int k = 0; k < followers.size(); k++) {
+        JSONObject tempUser = (JSONObject)followers.get(k);
+        long ids =  (Long) tempUser.get("id");
+        String screenName = (String) tempUser.get("screenName");
+        User tempUserUser = new User();
+        tempUserUser.setScreenName(screenName);
+        tempUserUser.setId(ids);
+        listId[k] = ids;
+        users.add(tempUserUser);
+            }
+            return listId;
+
+    }
+
+                private long[] getPierfrancescoFollowing() {
+
+                    JSONParser parser = new JSONParser();
+                    JSONObject jsonObject = new JSONObject();
+ 
+                    try {
+                 
+                        Object obj = parser.parse(new FileReader("c:\\Users\\pierfrancesco\\tweets0.json"));
+                 
+                        jsonObject = (JSONObject) obj;
+                 
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+    
+        long id =  (Long) jsonObject.get("id");
+        JSONObject userTemp = (JSONObject) jsonObject.get("user");
+        ArrayList<User> users = new ArrayList<User>();
+        
+        JSONArray followers = (JSONArray) userTemp.get("friends");
+        long[] listId = new long[followers.size()];
+        for (int k = 0; k < followers.size(); k++) {
+        JSONObject tempUser = (JSONObject)followers.get(k);
+        long ids =  (Long) tempUser.get("id");
+        String screenName = (String) tempUser.get("screenName");
+        User tempUserUser = new User();
+        tempUserUser.setScreenName(screenName);
+        tempUserUser.setId(ids);
+        listId[k] = ids;
+        users.add(tempUserUser);
+            }
+            return listId;
+
     }
     
     private List<Tweet> getRandomTweets(int numberOfTweets) {
