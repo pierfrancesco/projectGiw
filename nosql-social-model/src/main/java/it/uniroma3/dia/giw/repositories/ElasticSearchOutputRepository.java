@@ -64,17 +64,13 @@ public class ElasticSearchOutputRepository implements OutputRepository {
         // facet
         final String screenNameFacetName = "screenName";
         final String screenNameField = "screenName";
-        final String screenNameField2 = "author";
         final TermsFacetBuilder authorFacet = buildFacetOnField(screenNameFacetName,
                 screenNameField);
-        final TermsFacetBuilder authorFacet2 = buildFacetOnField(screenNameFacetName,
-                screenNameField2);
 
     final SearchResponse response0 = this.client
                 .prepareSearch(ElasticSearchInputRepository.DATABASE_NAME).setTypes("occurences")
                 .setQuery(beInTimeWindow)
-                .setSize(maxItems).execute().actionGet();
-                TermsFacet f = (TermsFacet) response0.facets().facetsAsMap().get("screenName");
+                .addFacet(authorFacet).execute().actionGet();
                 System.out.println("\n\nRESPOMS 0\n\n\n"+response0);
         
         final SearchResponse response = this.client
