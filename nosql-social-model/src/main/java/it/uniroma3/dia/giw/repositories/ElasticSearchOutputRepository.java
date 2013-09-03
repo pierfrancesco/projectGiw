@@ -48,7 +48,7 @@ public class ElasticSearchOutputRepository implements OutputRepository {
     
     public StringOccurrences authorOccurrences(MonitoringActivityId monitoringActivityId,
             DateTime startDate, DateTime endDate, int maxItems) {
-        System.out.println("QUESTO è il monitor"+monitoringActivityId);
+        System.out.println("QUESTO è il monitor"+startDate+"\n"+endDate);
         // queries
         final QueryBuilder beFromThisMonitoringActivity = buildInQuery(monitoringActivityId);
         final QueryBuilder beInTimeWindow = buildInclusiveRangeQuery("createdAt", startDate,
@@ -65,7 +65,7 @@ public class ElasticSearchOutputRepository implements OutputRepository {
                 screenNameField);
         
         final SearchResponse response = this.client
-                .prepareSearch(ElasticSearchInputRepository.DATABASE_NAME)
+                .prepareSearch(ElasticSearchInputRepository.DATABASE_NAME).setTypes(ElasticSearchInputRepository.CONTEXT_TWEET_TYPE)
                 .setQuery(tweetsInTimeWindowAndFromMonitoringActivity).addFacet(authorFacet)
                 .setSize(maxItems).execute().actionGet();
 

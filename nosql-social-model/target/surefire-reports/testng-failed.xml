@@ -10,17 +10,17 @@
           <include name="tearDownRepositories"/>
         </methods>
       </class>
-      <class name="it.uniroma3.dia.giw.repositories.performance.InMemoryInputOutputRepositoryPerformanceTest">
-        <methods>
-          <include name="initRepositories"/>
-          <include name="tearDownRepositories"/>
-        </methods>
-      </class>
       <class name="it.uniroma3.dia.giw.repositories.ElasticSearchInputOutputRepositoryIntegrationTestCase">
         <methods>
           <include name="cleanIndices"/>
           <include name="tearDownRepositories"/>
           <include name="initRepositories"/>
+        </methods>
+      </class>
+      <class name="it.uniroma3.dia.giw.repositories.performance.InMemoryInputOutputRepositoryPerformanceTest">
+        <methods>
+          <include name="initRepositories"/>
+          <include name="tearDownRepositories"/>
         </methods>
       </class>
     </classes>

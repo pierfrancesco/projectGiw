@@ -98,11 +98,44 @@ public class ElasticSearchInputRepository implements InputRepository {
     
     public ContextTweetId storeToStream(Tweet tweet, MonitoringActivityId monitoringActivityId)
             throws InputRepositoryException {
-        //System.out.println("Ho chiamto lo storeStream di ElasticSearch");
+        
         final DateTime createdAt = new DateTime(tweet.getCreatedAt());
         final int dayOfTheYear = createdAt.getDayOfYear();
         final int year = createdAt.getYear();
+
+        final DateTime createdAtMod = new DateTime(createdAt.year().get(),createdAt.monthOfYear().get(),createdAt.dayOfMonth().get(),createdAt.getHourOfDay(),30);
+        final String dateIdString = createdAtMod.toString();
         
+        //qui ora voglio inserire un metodo che mi dice: crea un indice parallelo
+                final SearchResponse response = this.client
+                .prepareSearch(ElasticSearchInputRepository.DATABASE_NAME).setTypes("occurences")
+                .setQuery(QueryBuilders.termQuery("_id",dateIdString))
+                .setSize(1).execute().actionGet();
+        if(response.hits().getTotalHits() != 0){
+
+            
+            //final String userId = 
+            final String script = "{\""+tweet.getUser().getId()+"\":\"1\"}";
+            //final String script2 = "\""+tweet.getUser().getId()+"\"";
+            System.out.println("\nora NOci sono\n+++++++++++++++++++++++++++++++++"+response);
+                    final String toStore = String.valueOf(tweet.getUser().getId());
+                    final String script2 = "{\"id\":\""+toStore+"\",\"count\":\"1\"}";
+                    this.client.prepareUpdate("twitter", "occurences", dateIdString)
+                    .setScript("if (ctx._source.author.id.contains("+toStore+")) { ctx.op=\"none\" }  else { ctx._source.author += "+script2+" }")
+                    //.setScript("ctx._source.author += {\"id\" :"+tweet.getUser().getId()+",\"count\": 1 }")
+                    .execute().actionGet(); 
+
+        } else {
+                    System.out.println("\n\n\n\n\n\n\n\n\n\nora ci sono\n\n\n\n\n\n+++++++++++++++++++++++++++++++++\n\n\n\n\n\n\n");
+
+                    //final String toStore = "{\"time\":\""+dateIdString+"\",\"author\":["+tweet.getUser().getId()+"]}";
+                    final String toStore = "{\"author\":[{\"id\" :\""+tweet.getUser().getId()+"\",\"count\": \"1\" }]}";
+                    //final String toStore = "{\"author\":[{\""+tweet.getUser().getId()+"\": \"1\"}]}";
+                    IndexResponse indexResponse0 = null;
+                    indexResponse0 = client
+                    .prepareIndex(DATABASE_NAME, "occurences",dateIdString)
+                    .setSource(toStore).execute().actionGet();       
+        }
         final String generatedId = UUID.randomUUID().toString();
         final ContextTweetId contextTweetId = new ContextTweetId(generatedId);
         final ContextTweet contextTweet = new ContextTweet(contextTweetId, tweet,

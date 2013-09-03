@@ -155,9 +155,7 @@ public abstract class BaseStoreQueryRepositoryPerformanceTest {
     
     public void getScreenNameOccurrences() throws InputRepositoryException, IOException {
     
-        DateTime startDateTime = new DateTime();
-        startDateTime.withYear(2011);
-        startDateTime.withDayOfMonth(01);
+        DateTime startDateTime = new DateTime(2013, 8, 1, 0, 0);
         
         DateTime endDateTime = new DateTime();
         
@@ -434,11 +432,12 @@ public abstract class BaseStoreQueryRepositoryPerformanceTest {
     private Tweet getRandomTweet() {
     
         long id = random.nextLong();
-        DateTime dateTime = new DateTime(2013, random.nextInt(11) + 1, random.nextInt(28) + 1, 0, 0);
+        DateTime dateTime = new DateTime(2013, 9, 1, 21, random.nextInt(59));
         Date createdAt = dateTime.toDate();
         String text = "ciao a tutti sono dentro get random tweet";
         String source = "source";
-        User user = new User(id + 1L);
+        //User user = new User(id + 1L);
+        User user = new User(123456789);
         user.setScreenName("userCICCIOBELLO"+id);
         //System.out.println("ora sono dentro al metodo getRandomTweet");
         return new Tweet(id, createdAt, text, source, user);
@@ -478,8 +477,9 @@ public abstract class BaseStoreQueryRepositoryPerformanceTest {
         users.add(tempUserUser);
             }
 
-        DateTime dateTime = new DateTime(2013, random.nextInt(12) + 1, random.nextInt(28) + 1, 0, 0);
+        DateTime dateTime = new DateTime();
         Date createdAt = dateTime.toDate();
+        System.out.println(createdAt);
         String text = (String) jsonObject.get("text");
         String source = "source";
         User user = new User();
