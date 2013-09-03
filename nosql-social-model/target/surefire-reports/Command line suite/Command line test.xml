@@ -1,37 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite hostname="pierfrancescoPC" name="it.uniroma3.dia.giw.repositories.ElasticSearchInputOutputRepositoryIntegrationTestCase" tests="3" failures="1" timestamp="3 Sep 2013 08:28:48 GMT" time="14.723" errors="0">
-  <testcase name="shouldBeGreen" time="0.004" classname="it.uniroma3.dia.giw.repositories.ElasticSearchInputOutputRepositoryIntegrationTestCase"/>
-  <testcase name="assessPerformance" time="2.516" classname="it.uniroma3.dia.giw.repositories.performance.InMemoryInputOutputRepositoryPerformanceTest"/>
-  <testcase name="assessPerformance" time="1.421" classname="it.uniroma3.dia.giw.repositories.performance.ElasticSearchStoreQueryRepositoryPerformanceTest">
-    <failure type="org.elasticsearch.ElasticSearchIllegalArgumentException" message="failed to execute script">
-      <![CDATA[org.elasticsearch.ElasticSearchIllegalArgumentException: failed to execute script
-	at org.elasticsearch.action.update.TransportUpdateAction.shardOperation(TransportUpdateAction.java:314)
-	at org.elasticsearch.action.update.TransportUpdateAction.shardOperation(TransportUpdateAction.java:211)
-	at org.elasticsearch.action.update.TransportUpdateAction.shardOperation(TransportUpdateAction.java:85)
-	at org.elasticsearch.action.support.single.instance.TransportInstanceSingleOperationAction$AsyncSingleAction$1.run(TransportInstanceSingleOperationAction.java:191)
-	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
-	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)
-	at java.lang.Thread.run(Thread.java:722)
-Caused by: [Error: could not access: id; in class: java.util.ArrayList]
-[Near : {... if (ctx._source.author.id.contains ....}]
-                 ^
-[Line: 1, Column: 5]
-	at org.elasticsearch.common.mvel2.optimizers.impl.refl.ReflectiveAccessorOptimizer.getBeanProperty(ReflectiveAccessorOptimizer.java:690)
-	at org.elasticsearch.common.mvel2.optimizers.impl.refl.ReflectiveAccessorOptimizer.compileGetChain(ReflectiveAccessorOptimizer.java:341)
-	at org.elasticsearch.common.mvel2.optimizers.impl.refl.ReflectiveAccessorOptimizer.optimizeAccessor(ReflectiveAccessorOptimizer.java:143)
-	at org.elasticsearch.common.mvel2.optimizers.dynamic.DynamicOptimizer.optimizeAccessor(DynamicOptimizer.java:67)
-	at org.elasticsearch.common.mvel2.ast.ASTNode.optimize(ASTNode.java:159)
-	at org.elasticsearch.common.mvel2.ast.ASTNode.getReducedValueAccelerated(ASTNode.java:115)
-	at org.elasticsearch.common.mvel2.compiler.ExecutableAccessor.getValue(ExecutableAccessor.java:38)
-	at org.elasticsearch.common.mvel2.ast.IfNode.getReducedValueAccelerated(IfNode.java:73)
-	at org.elasticsearch.common.mvel2.MVELRuntime.execute(MVELRuntime.java:85)
-	at org.elasticsearch.common.mvel2.compiler.CompiledExpression.getDirectValue(CompiledExpression.java:123)
-	at org.elasticsearch.common.mvel2.compiler.CompiledExpression.getValue(CompiledExpression.java:119)
-	at org.elasticsearch.common.mvel2.compiler.CompiledExpression.getValue(CompiledExpression.java:113)
-	at org.elasticsearch.script.mvel.MvelScriptEngineService$MvelExecutableScript.run(MvelScriptEngineService.java:130)
-	at org.elasticsearch.action.update.TransportUpdateAction.shardOperation(TransportUpdateAction.java:310)
-	... 6 more
-]]>
+<testsuite hostname="pierfrancescoPC" name="it.uniroma3.dia.giw.repositories.ElasticSearchInputOutputRepositoryIntegrationTestCase" tests="3" failures="1" timestamp="3 Sep 2013 10:51:07 GMT" time="16.903" errors="0">
+  <testcase name="shouldBeGreen" time="0.005" classname="it.uniroma3.dia.giw.repositories.ElasticSearchInputOutputRepositoryIntegrationTestCase"/>
+  <testcase name="assessPerformance" time="3.472" classname="it.uniroma3.dia.giw.repositories.performance.InMemoryInputOutputRepositoryPerformanceTest"/>
+  <testcase name="assessPerformance" time="0.977" classname="it.uniroma3.dia.giw.repositories.performance.ElasticSearchStoreQueryRepositoryPerformanceTest">
+    <failure type="java.lang.NullPointerException">
+      <![CDATA[java.lang.NullPointerException
+	at it.uniroma3.dia.giw.repositories.ElasticSearchOutputRepository.authorOccurrences(ElasticSearchOutputRepository.java:77)
+	at it.uniroma3.dia.giw.repositories.performance.BaseStoreQueryRepositoryPerformanceTest.getScreenNameOccurrences(BaseStoreQueryRepositoryPerformanceTest.java:166)
+	at it.uniroma3.dia.giw.repositories.performance.BaseStoreQueryRepositoryPerformanceTest.testPerformance(BaseStoreQueryRepositoryPerformanceTest.java:119)
+	at it.uniroma3.dia.giw.repositories.performance.BaseStoreQueryRepositoryPerformanceTest.assessPerformance(BaseStoreQueryRepositoryPerformanceTest.java:97)
+	at org.apache.maven.surefire.testng.TestNGExecutor.run(TestNGExecutor.java:70)
+	at org.apache.maven.surefire.testng.TestNGDirectoryTestSuite.executeMulti(TestNGDirectoryTestSuite.java:158)
+	at org.apache.maven.surefire.testng.TestNGDirectoryTestSuite.execute(TestNGDirectoryTestSuite.java:98)
+	at org.apache.maven.surefire.testng.TestNGProvider.invoke(TestNGProvider.java:111)
+	at org.apache.maven.surefire.util.ReflectionUtils.invokeMethodWithArray(ReflectionUtils.java:164)
+	at org.apache.maven.surefire.booter.ProviderFactory$ProviderProxy.invoke(ProviderFactory.java:110)
+	at org.apache.maven.surefire.booter.SurefireStarter.invokeProvider(SurefireStarter.java:175)
+	at org.apache.maven.surefire.booter.SurefireStarter.runSuitesInProcessWhenForked(SurefireStarter.java:107)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:68)
+... Removed 26 stack frames]]>
     </failure>
   </testcase>
 </testsuite>

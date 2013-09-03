@@ -155,7 +155,7 @@ public abstract class BaseStoreQueryRepositoryPerformanceTest {
     
     public void getScreenNameOccurrences() throws InputRepositoryException, IOException {
     
-        DateTime startDateTime = new DateTime(2013, 8, 1, 0, 0);
+        DateTime startDateTime = new DateTime(2013, 8, 2, 0, 0);
         
         DateTime endDateTime = new DateTime();
         
@@ -438,7 +438,7 @@ public abstract class BaseStoreQueryRepositoryPerformanceTest {
         String source = "source";
         //User user = new User(id + 1L);
         User user = new User(123456789);
-        user.setScreenName("userCICCIOBELLO"+id);
+        user.setScreenName("userCICCIOBELLO");
         //System.out.println("ora sono dentro al metodo getRandomTweet");
         return new Tweet(id, createdAt, text, source, user);
     }

@@ -114,23 +114,25 @@ public class ElasticSearchInputRepository implements InputRepository {
         if(response.hits().getTotalHits() != 0){
 
             
-            //final String userId = 
-            final String script = "{\""+tweet.getUser().getId()+"\":\"1\"}";
-            //final String script2 = "\""+tweet.getUser().getId()+"\"";
-            System.out.println("\nora NOci sono\n+++++++++++++++++++++++++++++++++"+response);
-                    final String toStore = String.valueOf(tweet.getUser().getId());
-                    final String script2 = "{\"id\":\""+toStore+"\",\"count\":\"1\"}";
+            //System.out.println("\nora NOci sono\n+++++++++++++++++++++++++++++++++"+response);
+                    final String toStore = "\""+String.valueOf(tweet.getUser().getId())+"\"";
+                    //final String script2 = "{\"id\":\""+toStore+"\",\"count\":\"1\"}";
+                    //final String script3 = "\""+toStore+"\": {\"count\" :\"1\"}";
+                    final String toStore0 = String.valueOf(tweet.getUser().getId());
+                    final String toStore1 = String.valueOf(tweet.getUser().getScreenName());
                     this.client.prepareUpdate("twitter", "occurences", dateIdString)
-                    .setScript("if (ctx._source.author.id.contains("+toStore+")) { ctx.op=\"none\" }  else { ctx._source.author += "+script2+" }")
                     //.setScript("ctx._source.author += {\"id\" :"+tweet.getUser().getId()+",\"count\": 1 }")
+                    .setScript("ctx._source.author += {\"id\":\""+toStore0+"\",\"screenName\": \""+toStore1+"\"}")
                     .execute().actionGet(); 
 
         } else {
-                    System.out.println("\n\n\n\n\n\n\n\n\n\nora ci sono\n\n\n\n\n\n+++++++++++++++++++++++++++++++++\n\n\n\n\n\n\n");
+                    //System.out.println("\n\n\n\n\n\n\n\n\n\nora ci sono\n\n\n\n\n\n+++++++++++++++++++++++++++++++++\n\n\n\n\n\n\n");
 
                     //final String toStore = "{\"time\":\""+dateIdString+"\",\"author\":["+tweet.getUser().getId()+"]}";
-                    final String toStore = "{\"author\":[{\"id\" :\""+tweet.getUser().getId()+"\",\"count\": \"1\" }]}";
-                    //final String toStore = "{\"author\":[{\""+tweet.getUser().getId()+"\": \"1\"}]}";
+                    final String toStore0 = String.valueOf(tweet.getUser().getId());
+                    final String toStore1 = String.valueOf(tweet.getUser().getScreenName());
+                    final String toStore = "{\"author\":[{\"id\":\""+toStore0+"\",\"screenName\" :\""+toStore1+"\"}],\"createdAt\":\""+dateIdString+"\"}";
+                    //final String toStore = "{\"author\":[\"id\":\""+toStore0+"\",\"count\": \"1\"]}";
                     IndexResponse indexResponse0 = null;
                     indexResponse0 = client
                     .prepareIndex(DATABASE_NAME, "occurences",dateIdString)

@@ -49,10 +49,13 @@ public class ElasticSearchOutputRepository implements OutputRepository {
     public StringOccurrences authorOccurrences(MonitoringActivityId monitoringActivityId,
             DateTime startDate, DateTime endDate, int maxItems) {
         System.out.println("QUESTO è il monitor"+startDate+"\n"+endDate);
+
+
         // queries
         final QueryBuilder beFromThisMonitoringActivity = buildInQuery(monitoringActivityId);
         final QueryBuilder beInTimeWindow = buildInclusiveRangeQuery("createdAt", startDate,
                 endDate);
+
         
         // AND query
         final QueryBuilder tweetsInTimeWindowAndFromMonitoringActivity = QueryBuilders.boolQuery()
@@ -61,8 +64,18 @@ public class ElasticSearchOutputRepository implements OutputRepository {
         // facet
         final String screenNameFacetName = "screenName";
         final String screenNameField = "screenName";
+        final String screenNameField2 = "author";
         final TermsFacetBuilder authorFacet = buildFacetOnField(screenNameFacetName,
                 screenNameField);
+        final TermsFacetBuilder authorFacet2 = buildFacetOnField(screenNameFacetName,
+                screenNameField2);
+
+    final SearchResponse response0 = this.client
+                .prepareSearch(ElasticSearchInputRepository.DATABASE_NAME).setTypes("occurences")
+                .setQuery(beInTimeWindow)
+                .setSize(maxItems).execute().actionGet();
+                TermsFacet f = (TermsFacet) response0.facets().facetsAsMap().get("screenName");
+                System.out.println("\n\nRESPOMS 0\n\n\n"+response0);
         
         final SearchResponse response = this.client
                 .prepareSearch(ElasticSearchInputRepository.DATABASE_NAME).setTypes(ElasticSearchInputRepository.CONTEXT_TWEET_TYPE)
@@ -72,7 +85,7 @@ public class ElasticSearchOutputRepository implements OutputRepository {
         /*final SearchResponse response = this.client
                 .prepareSearch(ElasticSearchInputRepository.DATABASE_NAME)
                 .setSize(maxItems).execute().actionGet();*/
-        System.out.println("QUESTO"+response);
+        //System.out.println("QUESTO"+response);
         LOGGER.debug("found '" + response.hits().getTotalHits() + "' hits");
         
         // convert results
