@@ -156,7 +156,8 @@ public abstract class BaseStoreQueryRepositoryPerformanceTest {
     public void getScreenNameOccurrences() throws InputRepositoryException, IOException {
     
         DateTime startDateTime = new DateTime(2013, 8, 2, 0, 0);
-        
+
+
         DateTime endDateTime = new DateTime();
         
         long[] allResults = new long[iterations];

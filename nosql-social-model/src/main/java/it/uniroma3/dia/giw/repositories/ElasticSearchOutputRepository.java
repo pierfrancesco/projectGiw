@@ -4,10 +4,16 @@ import it.uniroma3.dia.giw.model.OutputRepository;
 import it.uniroma3.dia.giw.model.StringOccurrences;
 import it.uniroma3.dia.giw.model.monitoring.MonitoringActivityId;
 import it.uniroma3.dia.giw.model.twitter.data.User;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.ArrayList;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.elasticsearch.action.search.SearchResponse;
@@ -20,6 +26,7 @@ import org.elasticsearch.node.Node;
 import org.elasticsearch.search.facet.FacetBuilders;
 import org.elasticsearch.search.facet.terms.TermsFacet;
 import org.elasticsearch.search.facet.terms.TermsFacetBuilder;
+import org.elasticsearch.search.SearchHit;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,28 +74,60 @@ public class ElasticSearchOutputRepository implements OutputRepository {
         final TermsFacetBuilder authorFacet = buildFacetOnField(screenNameFacetName,
                 screenNameField);
 
-    final SearchResponse response0 = this.client
+
+        Map<String, Integer> freq = new HashMap<String, Integer>();
+
+
+        final SearchResponse response0 = this.client
                 .prepareSearch(ElasticSearchInputRepository.DATABASE_NAME).setTypes("occurences")
-                .setQuery(beInTimeWindow)
-                .addFacet(authorFacet).execute().actionGet();
-                System.out.println("\n\nRESPOMS 0\n\n\n"+response0);
+                .setQuery(beInTimeWindow).execute().actionGet();
+        final Iterator<SearchHit> resultsIterator = response0.getHits().iterator();
+                            while (resultsIterator.hasNext()) {
+                                final SearchHit currentResult = resultsIterator.next();
+                                final String jsonContextTweet = currentResult.getSourceAsString();
+                                try {
+                                 JSONObject json = objectMapper.readValue(jsonContextTweet, JSONObject.class);
+
+
+
+                                 ArrayList<LinkedHashMap> author = (ArrayList<LinkedHashMap>) json.get("author");
+                                System.out.println("Sto stampando CON IL Array\n\n"+author);
+                                System.out.println("Sto stampando CON IL Array\n\n"+author.size());
+
+ 
+                                //
+                                for(int s=0; s < author.size();s++ ){
+                                    System.out.println("Sto stampando CON IL GET\n\n"+author.get(s).get("id"));
+
+                                    Integer count = freq.get(String.valueOf(author.get(s).get("screenName")));
+                                    if (count == null) {
+                                        freq.put(String.valueOf(author.get(s).get("screenName")), 1);
+                                    }
+                                    else {
+                                        freq.put(String.valueOf(author.get(s).get("screenName")), count + 1);
+                                    }
+                                }
+                                //   
+                            } catch (final Exception e) {
+                                System.out.println("Sto stampando E"+e);
+                            }
+                            System.out.println("\n\nRESPOMS 0\n\n\n"+freq);
+                            }
+                
         
-        final SearchResponse response = this.client
+        /*final SearchResponse response = this.client
                 .prepareSearch(ElasticSearchInputRepository.DATABASE_NAME).setTypes(ElasticSearchInputRepository.CONTEXT_TWEET_TYPE)
                 .setQuery(tweetsInTimeWindowAndFromMonitoringActivity).addFacet(authorFacet)
                 .setSize(maxItems).execute().actionGet();
 
-        /*final SearchResponse response = this.client
-                .prepareSearch(ElasticSearchInputRepository.DATABASE_NAME)
-                .setSize(maxItems).execute().actionGet();*/
-        //System.out.println("QUESTO"+response);
         LOGGER.debug("found '" + response.hits().getTotalHits() + "' hits");
         
         // convert results
         final TermsFacet authorFacets = (TermsFacet) response.facets().facetsAsMap()
                 .get(screenNameFacetName);
         final Map<String, Integer> screenNameOccurrences = convertToMap(authorFacets);
-        return new StringOccurrences(screenNameOccurrences);
+        return new StringOccurrences(screenNameOccurrences);*/
+        return new StringOccurrences(freq);
     }
     
     public StringOccurrences hashTagsOccurrences(final MonitoringActivityId monitoringActivityId,
