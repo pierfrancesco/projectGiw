@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import org.elasticsearch.common.collect.Lists;
 import org.elasticsearch.common.collect.Maps;
 import org.joda.time.DateTime;
+import org.joda.time.format.*;
 import org.slf4j.Logger;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -66,7 +67,7 @@ public abstract class BaseStoreQueryRepositoryPerformanceTest {
     
     protected abstract void tearDownRepositories();
     
-    protected int[] xData = new int[] { 10, 100, 1000, 10000, 100000 };
+    protected int[] xData = new int[] { 10, 100, 1000, 10000/*, 100000*/};
     protected Map<String, List<Long>> results = Maps.newHashMap();
     
     protected List<List<Tweet>> inputData = Lists.newLinkedList();
@@ -82,13 +83,21 @@ public abstract class BaseStoreQueryRepositoryPerformanceTest {
 
 
             int randomIndex = random.nextInt(xData[i] - 1);
-            System.out.println("\n\n andomInde"+randomIndex);
+            //System.out.println("\n\n andomInde"+randomIndex);
             ContextTweetId storedContextTweetId = null;
             for (int storedTweets = 0; storedTweets < xData[i]; storedTweets++) {
-                
-                ContextTweetId contextTweetID = this.writeRepository.storeToStream(
-                        getRandomTweet(), MONITORING_ACTIVITY_ID);
                 //qui devo mettere no get random tweet, ma i tweet che ho preso dal repo;
+            try
+            {
+               
+                Thread.sleep(10);
+            } catch (InterruptedException ie)
+            {
+                ie.printStackTrace();
+            }
+                                    ContextTweetId contextTweetID = this.writeRepository.storeToStream(
+                        getPierfrancescoTweet(), MONITORING_ACTIVITY_ID);
+
                 if (storedTweets == randomIndex) {
                     storedContextTweetId = contextTweetID;
                 }
@@ -155,7 +164,7 @@ public abstract class BaseStoreQueryRepositoryPerformanceTest {
     
     public void getScreenNameOccurrences() throws InputRepositoryException, IOException {
     
-        DateTime startDateTime = new DateTime(2013, 8, 2, 0, 0);
+        DateTime startDateTime = new DateTime(2013, 7, 2, 0, 0);
 
 
         DateTime endDateTime = new DateTime();
@@ -166,7 +175,7 @@ public abstract class BaseStoreQueryRepositoryPerformanceTest {
             long startingTime = System.nanoTime();
             StringOccurrences stringOccurrences = this.readRepository.authorOccurrences(
                     MONITORING_ACTIVITY_ID, startDateTime, endDateTime, MAX_AUTHORS);
-            System.out.println(stringOccurrences);
+            //System.out.println(stringOccurrences);
             Assert.assertNotNull(stringOccurrences);
             long endingTime = System.nanoTime();
             allResults[j] = endingTime - startingTime;
@@ -177,6 +186,7 @@ public abstract class BaseStoreQueryRepositoryPerformanceTest {
     
     public void getHashTagsOccurrences() throws InputRepositoryException, IOException {
     
+
         DateTime startDateTime = new DateTime();
         startDateTime.withYear(2013);
         startDateTime.withDayOfMonth(01);
@@ -438,20 +448,24 @@ public abstract class BaseStoreQueryRepositoryPerformanceTest {
         String text = "ciao a tutti sono dentro get random tweet";
         String source = "source";
         //User user = new User(id + 1L);
-        User user = new User(123456789);
-        user.setScreenName("userCICCIOBELLO");
+        User user = new User(id);
+        int y = random.nextInt(2);
+        String x = "0";
+        if(y == 1){x = "1";} else if(y==2){x="2";}else{x="0";}
+        user.setScreenName("userCICCIOBELL"+x);
         //System.out.println("ora sono dentro al metodo getRandomTweet");
         return new Tweet(id, createdAt, text, source, user);
     }
 
-        private Tweet getPierfrancescoTweet() {
+        private Tweet getPierfrancescoTweet(){
 
                     JSONParser parser = new JSONParser();
                     JSONObject jsonObject = new JSONObject();
+                    int r = random.nextInt(620);
  
                     try {
                  
-                        Object obj = parser.parse(new FileReader("src\\test\\resources\\\\tweets\\tweets5.json"));
+                        Object obj = parser.parse(new FileReader("src\\test\\resources\\\\tweets\\tweets"+r+".json"));
                         //Object obj = parser.parse(new FileReader("c:\\Users\\pierfrancesco\\tweets\\tweets5.json"));
                  
                         jsonObject = (JSONObject) obj;
@@ -466,6 +480,9 @@ public abstract class BaseStoreQueryRepositoryPerformanceTest {
     
         long id =  (Long) jsonObject.get("id");
         JSONObject userTemp = (JSONObject) jsonObject.get("user");
+        String screenN = String.valueOf(userTemp.get("screenName"));
+        //System.out.println(screenN);
+        //System.out.println(screenN.replaceAll("[-+.^:,?!#''\";%£$=çò°§}{*&]",""));
         ArrayList<User> users = new ArrayList<User>();
         JSONArray followers = (JSONArray) userTemp.get("followers");
         for (int k = 0; k < followers.size(); k++) {
@@ -478,13 +495,18 @@ public abstract class BaseStoreQueryRepositoryPerformanceTest {
         users.add(tempUserUser);
             }
 
-        DateTime dateTime = new DateTime();
+        //String dateString = (String) jsonObject.get("createdAt");
+        //DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-ddHH:mm:ss");
+        DateTime dateTime = new DateTime(2013, random.nextInt(7)+1, random.nextInt(28)+1, random.nextInt(23), random.nextInt(59));
         Date createdAt = dateTime.toDate();
-        System.out.println(createdAt);
+        //System.out.println(dateTime);
+        
         String text = (String) jsonObject.get("text");
         String source = "source";
         User user = new User();
-        user.setScreenName("pierfrancesco");
+        String result = screenN.replaceAll("[-+.^:,{}!?£$%&/()=*§°ç'/_\"]","");
+        String userToAssign = "user"+random.nextInt(600);
+        user.setScreenName(userToAssign);
         user.setFollowers(users);
         //System.out.println("ora sono dentro al metodo getRandomTweet");
         return new Tweet(id, createdAt, text, source, user);

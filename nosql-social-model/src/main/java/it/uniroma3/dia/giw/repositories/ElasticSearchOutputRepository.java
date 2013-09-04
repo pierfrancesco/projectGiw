@@ -55,7 +55,7 @@ public class ElasticSearchOutputRepository implements OutputRepository {
     
     public StringOccurrences authorOccurrences(MonitoringActivityId monitoringActivityId,
             DateTime startDate, DateTime endDate, int maxItems) {
-        System.out.println("QUESTO è il monitor"+startDate+"\n"+endDate);
+        //System.out.println("QUESTO è il monitor"+startDate+"\n"+endDate);
 
 
         // queries
@@ -80,40 +80,47 @@ public class ElasticSearchOutputRepository implements OutputRepository {
 
         final SearchResponse response0 = this.client
                 .prepareSearch(ElasticSearchInputRepository.DATABASE_NAME).setTypes("occurences")
-                .setQuery(beInTimeWindow).execute().actionGet();
+                .setQuery(beInTimeWindow).setSize(maxItems).execute().actionGet();
+
+                if(response0.hits().getTotalHits() != 0){
+
         final Iterator<SearchHit> resultsIterator = response0.getHits().iterator();
+        //System.out.println("\n\nQUI CI SEI ARRIVATO\n\n\n"+response0);
                             while (resultsIterator.hasNext()) {
                                 final SearchHit currentResult = resultsIterator.next();
                                 final String jsonContextTweet = currentResult.getSourceAsString();
-                                try {
-                                 JSONObject json = objectMapper.readValue(jsonContextTweet, JSONObject.class);
+                                            try {
+                                             JSONObject json = objectMapper.readValue(jsonContextTweet, JSONObject.class);
 
 
 
-                                 ArrayList<LinkedHashMap> author = (ArrayList<LinkedHashMap>) json.get("author");
-                                System.out.println("Sto stampando CON IL Array\n\n"+author);
-                                System.out.println("Sto stampando CON IL Array\n\n"+author.size());
+                                             ArrayList<LinkedHashMap> author = (ArrayList<LinkedHashMap>) json.get("author");
+                                            //System.out.println("Sto stampando CON IL Array\n\n"+author);
+                                            //System.out.println("Sto stampando CON IL Array\n\n"+author.size());
 
- 
-                                //
-                                for(int s=0; s < author.size();s++ ){
-                                    System.out.println("Sto stampando CON IL GET\n\n"+author.get(s).get("id"));
+                                            
 
-                                    Integer count = freq.get(String.valueOf(author.get(s).get("screenName")));
-                                    if (count == null) {
-                                        freq.put(String.valueOf(author.get(s).get("screenName")), 1);
-                                    }
-                                    else {
-                                        freq.put(String.valueOf(author.get(s).get("screenName")), count + 1);
-                                    }
-                                }
-                                //   
-                            } catch (final Exception e) {
-                                System.out.println("Sto stampando E"+e);
+                                            //
+                                            for(int s=0; s < author.size();s++ ){
+                                                //System.out.println("Sto stampando CON IL GET\n\n"+author.get(s).get("screenName"));
+                                                final String stringValue = (String) author.get(s).get("screenName");
+                                                Integer count = freq.get(stringValue);
+                                                if (count == null) {
+                                                    freq.put(stringValue, 1);
+                                                }
+                                                else {
+                                                    freq.put(stringValue, count + 1);
+                                                }
+                                            }
+                                            //   
+                                        } catch (final Exception e) {
+                                            System.out.println("Sto stampando E"+e);
+                                        }
+                                        
                             }
-                            System.out.println("\n\nRESPOMS 0\n\n\n"+freq);
-                            }
-                
+                        }
+                        //System.out.println("\n\nRESPOMS 0\n\n\n"+freq);
+                        return new StringOccurrences(freq);
         
         /*final SearchResponse response = this.client
                 .prepareSearch(ElasticSearchInputRepository.DATABASE_NAME).setTypes(ElasticSearchInputRepository.CONTEXT_TWEET_TYPE)
@@ -127,7 +134,7 @@ public class ElasticSearchOutputRepository implements OutputRepository {
                 .get(screenNameFacetName);
         final Map<String, Integer> screenNameOccurrences = convertToMap(authorFacets);
         return new StringOccurrences(screenNameOccurrences);*/
-        return new StringOccurrences(freq);
+        
     }
     
     public StringOccurrences hashTagsOccurrences(final MonitoringActivityId monitoringActivityId,

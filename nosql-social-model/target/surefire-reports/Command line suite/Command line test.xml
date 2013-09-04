@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite hostname="pierfrancescoPC" name="it.uniroma3.dia.giw.repositories.ElasticSearchInputOutputRepositoryIntegrationTestCase" tests="3" failures="0" timestamp="4 Sep 2013 20:24:53 GMT" time="314.377" errors="0">
+  <testcase name="shouldBeGreen" time="0.003" classname="it.uniroma3.dia.giw.repositories.ElasticSearchInputOutputRepositoryIntegrationTestCase"/>
+  <testcase name="assessPerformance" time="123.555" classname="it.uniroma3.dia.giw.repositories.performance.InMemoryInputOutputRepositoryPerformanceTest"/>
+  <testcase name="assessPerformance" time="180.277" classname="it.uniroma3.dia.giw.repositories.performance.ElasticSearchStoreQueryRepositoryPerformanceTest"/>
+</testsuite>

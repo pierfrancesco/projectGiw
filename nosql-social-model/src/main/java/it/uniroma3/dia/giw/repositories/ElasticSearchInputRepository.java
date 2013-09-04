@@ -83,7 +83,6 @@ public class ElasticSearchInputRepository implements InputRepository {
         //System.out.println("STAK TRACE__________________________"+stackTraceElements[1]);
         
         for (final Tweet tweet : tweets) {
-            System.out.println("Sono DENTRO a ElasticSearchInputRepository con la lista che gli viene passata ***************** ");
                 //System.out.println(this);
             final ContextTweetId savedId = storeToStream(tweet, monitoringActivityId);
             // TODO manage exceptions
@@ -103,15 +102,18 @@ public class ElasticSearchInputRepository implements InputRepository {
         final int dayOfTheYear = createdAt.getDayOfYear();
         final int year = createdAt.getYear();
 
+
+        /***********************************/
         final DateTime createdAtMod = new DateTime(createdAt.year().get(),createdAt.monthOfYear().get(),createdAt.dayOfMonth().get(),createdAt.getHourOfDay(),30);
         final String dateIdString = createdAtMod.toString();
-        
+        //System.out.println("STOREDATA"+createdAt);
+
         //qui ora voglio inserire un metodo che mi dice: crea un indice parallelo
-                final SearchResponse response = this.client
+        final SearchResponse response = this.client
                 .prepareSearch(ElasticSearchInputRepository.DATABASE_NAME).setTypes("occurences")
-                .setQuery(QueryBuilders.termQuery("_id",dateIdString))
+                .setQuery(QueryBuilders.termQuery("createdAt",dateIdString))
                 .setSize(1).execute().actionGet();
-        if(response.hits().getTotalHits() != 0){
+                if(response.hits().getTotalHits() != 0){
 
             
             //System.out.println("\nora NOci sono\n+++++++++++++++++++++++++++++++++"+response);
@@ -138,7 +140,10 @@ public class ElasticSearchInputRepository implements InputRepository {
                     .prepareIndex(DATABASE_NAME, "occurences",dateIdString)
                     .setSource(toStore).execute().actionGet();       
         }
-        final String generatedId = UUID.randomUUID().toString();
+        /********************/
+
+
+        /*final String generatedId = UUID.randomUUID().toString();
         final ContextTweetId contextTweetId = new ContextTweetId(generatedId);
         final ContextTweet contextTweet = new ContextTweet(contextTweetId, tweet,
                 monitoringActivityId.getValue(), year, dayOfTheYear);
@@ -163,7 +168,7 @@ public class ElasticSearchInputRepository implements InputRepository {
                     + "' for monitoringActivityId '" + monitoringActivityId.getValue() + "'");
         }
         
-        LOGGER.debug("Tweet stored with index: " + indexResponse.getId());
+        LOGGER.debug("Tweet stored with index: " + indexResponse.getId());*/
         return contextTweetId;
     }
     
