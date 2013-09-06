@@ -1,0 +1,23 @@
+<html>
+<head>
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript">
+google.load("visualization", "1", {packages:["corechart"]});
+google.setOnLoadCallback(drawChart);
+function drawChart() {
+var data = google.visualization.arrayToDataTable([
+['n. of existing tweets in repository',  'ElasticSearchStoreQueryRepositoryPerformanceTest - Get hashtag occurrences'],
+['10', 28057795],
+['100', 26266451],
+['1000', 29262119],
+['10000', 36388654]]);
+var options = {title: 'Get hashtag occurrences', hAxis: {title: 'n. of existing tweets in repository'}, vAxis: {title: 'Get hashtag occurrences'}};
+var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+chart.draw(data, options);
+ }
+</script>
+</head>
+<body>
+<div id="chart_div" style="width: 900px; height: 500px;"></div>
+</body>
+</html>

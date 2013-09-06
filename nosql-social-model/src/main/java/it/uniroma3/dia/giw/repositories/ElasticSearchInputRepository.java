@@ -15,11 +15,17 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 import java.util.Map;
+
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.elasticsearch.ElasticSearchException;
@@ -103,7 +109,7 @@ public class ElasticSearchInputRepository implements InputRepository {
         final int year = createdAt.getYear();
 
 
-        /***********************************/
+        /************AUTHOR***********************
         final DateTime createdAtMod = new DateTime(createdAt.year().get(),createdAt.monthOfYear().get(),createdAt.dayOfMonth().get(),createdAt.getHourOfDay(),30);
         final String dateIdString = createdAtMod.toString();
         //System.out.println("STOREDATA"+createdAt);
@@ -140,24 +146,101 @@ public class ElasticSearchInputRepository implements InputRepository {
                     .prepareIndex(DATABASE_NAME, "occurences",dateIdString)
                     .setSource(toStore).execute().actionGet();       
         }
+        ********************/
+
+
+                /************HASH***********************/
+        final DateTime createdAtMod = new DateTime(createdAt.year().get(),createdAt.monthOfYear().get(),createdAt.dayOfMonth().get(),createdAt.getHourOfDay(),30);
+        final String dateIdString = createdAtMod.toString();
+        
+
+        //qui ora voglio inserire un metodo che mi dice: crea un indice parallelo
+        final SearchResponse response = this.client
+                .prepareSearch(ElasticSearchInputRepository.DATABASE_NAME).setTypes("hash")
+                .setQuery(QueryBuilders.termQuery("createdAt",dateIdString))
+                .setSize(1).execute().actionGet();
+                String textRaw = tweet.getText().toLowerCase();
+                    InputStream   fis;
+                    BufferedReader br;
+                    String        line;
+                    try {
+                    fis = new FileInputStream("src\\test\\resources\\stopWENG.txt");
+                    br = new BufferedReader(new InputStreamReader(fis, Charset.forName("UTF-8")));
+                    while ((line = br.readLine()) != null) {
+                        //System.out.println(textRaw);
+                        String regex = "\\s*\\b"+line+"\\b\\s*";
+                        textRaw = textRaw.replaceAll(regex, " ");
+                        //System.out.println(textRaw);
+                    }
+                    fis.close();
+                        }
+                    catch (IOException e) {
+                            e.printStackTrace();
+                            System.out.println(e);
+                        }
+                    try {
+                    fis = new FileInputStream("src\\test\\resources\\stopWITA.txt");
+                    br = new BufferedReader(new InputStreamReader(fis, Charset.forName("UTF-8")));
+                    while ((line = br.readLine()) != null) {
+                        //System.out.println(textRaw);
+                        String regex = "\\s*\\b"+line+"\\b\\s*";
+                        textRaw = textRaw.replaceAll(regex, " ");
+                        //System.out.println(textRaw);
+
+                    }
+                    fis.close();
+                        }
+                    catch (IOException e) {
+                            e.printStackTrace();
+                            System.out.println(e);
+                        }
+                if(response.hits().getTotalHits() != 0){
+
+
+            //System.out.println("\nora NOci sono\n+++++++++++++++++++++++++++++++++"+response);
+                    final String toStore = "\""+String.valueOf(tweet.getUser().getId())+"\"";
+                    final String toStore0 = String.valueOf(tweet.getUser().getId());
+                    final String toStore1 = String.valueOf(tweet.getUser().getScreenName());
+
+                    final String toStore3 = "{\"text\":\""+textRaw+"\"}";
+
+
+                    //System.out.println("\nora NOci sono\n+++++++++++++++++++++++++++++++++"+textRaw);
+
+                    this.client.prepareUpdate("twitter", "hash", dateIdString)
+                    .setScript("ctx._source.texts += "+toStore3+"")
+                    .execute().actionGet(); 
+
+        } else {
+                    //System.out.println("\n\n\n\n\n\n\n\n\n\nora ci sono\n\n\n\n\n\n+++++++++++++++++++++++++++++++++\n\n\n\n\n\n\n");
+
+                    //final String toStore = "{\"time\":\""+dateIdString+"\",\"author\":["+tweet.getUser().getId()+"]}";
+                    final String toStore0 = String.valueOf(tweet.getUser().getId());
+                    final String toStore1 = String.valueOf(tweet.getUser().getScreenName());
+                    final String toStore3 = "{\"texts\":[{\"text\":\""+textRaw+"\"}],\"createdAt\":\""+dateIdString+"\"}";
+                                               
+                    IndexResponse indexResponse0 = null;
+                    indexResponse0 = client
+                    .prepareIndex(DATABASE_NAME, "hash",dateIdString)
+                    .setSource(toStore3).execute().actionGet();       
+        }
         /********************/
 
 
-        /*final String generatedId = UUID.randomUUID().toString();
+        final String generatedId = UUID.randomUUID().toString();
         final ContextTweetId contextTweetId = new ContextTweetId(generatedId);
+        
+
+        /**CYBION**
         final ContextTweet contextTweet = new ContextTweet(contextTweetId, tweet,
                 monitoringActivityId.getValue(), year, dayOfTheYear);
         
         final String contextTweetJson = serializeContextTweet(contextTweet);
         
         LOGGER.debug("Storing context tweet: " + contextTweetJson);
-        //System.out.println("IL JSON"+contextTweetJson);
-
         
         IndexResponse indexResponse = null;
         try {
-            //System.out.println("qui dentro sei arrivato");
-            //System.out.println(contextTweetId.getId());
 
             indexResponse = client
                     .prepareIndex(DATABASE_NAME, CONTEXT_TWEET_TYPE, contextTweetId.getId())
@@ -168,7 +251,8 @@ public class ElasticSearchInputRepository implements InputRepository {
                     + "' for monitoringActivityId '" + monitoringActivityId.getValue() + "'");
         }
         
-        LOGGER.debug("Tweet stored with index: " + indexResponse.getId());*/
+        LOGGER.debug("Tweet stored with index: " + indexResponse.getId());
+        ***********CYBION************/
         return contextTweetId;
     }
     
@@ -686,6 +770,5 @@ public class ElasticSearchInputRepository implements InputRepository {
     
         // TODO Auto-generated method stub
         return 0;
-    }
-    
+    }    
 }

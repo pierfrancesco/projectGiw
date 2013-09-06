@@ -125,8 +125,8 @@ public abstract class BaseStoreQueryRepositoryPerformanceTest {
         //getFollowers();
         //storeOneTweet();
         //getTweetById(storedContextTweetId);
-        getScreenNameOccurrences();
-        //getHashTagsOccurrences();
+        //getScreenNameOccurrences();
+        getHashTagsOccurrences();
         //pierfrancescoTest();
         
         
@@ -164,7 +164,7 @@ public abstract class BaseStoreQueryRepositoryPerformanceTest {
     
     public void getScreenNameOccurrences() throws InputRepositoryException, IOException {
     
-        DateTime startDateTime = new DateTime(2013, 7, 2, 0, 0);
+        DateTime startDateTime = new DateTime(2013, 1, 1, 0, 0);
 
 
         DateTime endDateTime = new DateTime();
@@ -187,10 +187,7 @@ public abstract class BaseStoreQueryRepositoryPerformanceTest {
     public void getHashTagsOccurrences() throws InputRepositoryException, IOException {
     
 
-        DateTime startDateTime = new DateTime();
-        startDateTime.withYear(2013);
-        startDateTime.withDayOfMonth(01);
-        startDateTime.withDayOfMonth(01);
+        DateTime startDateTime = new DateTime(2013,01,01, 0,0);
         
         DateTime endDateTime = new DateTime();
         
@@ -501,14 +498,22 @@ public abstract class BaseStoreQueryRepositoryPerformanceTest {
         Date createdAt = dateTime.toDate();
         //System.out.println(dateTime);
         
-        String text = (String) jsonObject.get("text");
+        //String text = (String) jsonObject.get("text");
+        int rand = random.nextInt(2); 
+        String text = "";
+        if(rand == 1)
+            {         text = "Soon as possible i'll fix this problem about #escapestring, but now i want to test the #efficiency";
+}else{
+                    text = "I think that work in #summer it's a crime to the #humanity";
+        }
+        //System.out.println(text);
         String source = "source";
         User user = new User();
         String result = screenN.replaceAll("[-+.^:,{}!?£$%&/()=*§°ç'/_\"]","");
         String userToAssign = "user"+random.nextInt(600);
         user.setScreenName(userToAssign);
         user.setFollowers(users);
-        //System.out.println("ora sono dentro al metodo getRandomTweet");
+        
         return new Tweet(id, createdAt, text, source, user);
     }
             private User getPierfrancescoUser() {

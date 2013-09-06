@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.elasticsearch.action.search.SearchResponse;
@@ -62,6 +63,12 @@ public class ElasticSearchOutputRepository implements OutputRepository {
         final QueryBuilder beFromThisMonitoringActivity = buildInQuery(monitoringActivityId);
         final QueryBuilder beInTimeWindow = buildInclusiveRangeQuery("createdAt", startDate,
                 endDate);
+        /*QueryBuilder beInTimeWindow = QueryBuilders
+                    .rangeQuery("_id")
+                    .from(startDate)
+                    .to(endDate)
+                    .includeLower(true)
+                    .includeUpper(false);*/
 
         
         // AND query
@@ -78,14 +85,15 @@ public class ElasticSearchOutputRepository implements OutputRepository {
         Map<String, Integer> freq = new HashMap<String, Integer>();
 
 
+        /******AUTHOR***********/
         final SearchResponse response0 = this.client
                 .prepareSearch(ElasticSearchInputRepository.DATABASE_NAME).setTypes("occurences")
                 .setQuery(beInTimeWindow).setSize(maxItems).execute().actionGet();
-
+//System.out.println("\n\nQUI CI SEI ARRIVATO\n\n\n"+response0);
                 if(response0.hits().getTotalHits() != 0){
 
         final Iterator<SearchHit> resultsIterator = response0.getHits().iterator();
-        //System.out.println("\n\nQUI CI SEI ARRIVATO\n\n\n"+response0);
+        
                             while (resultsIterator.hasNext()) {
                                 final SearchHit currentResult = resultsIterator.next();
                                 final String jsonContextTweet = currentResult.getSourceAsString();
@@ -119,6 +127,10 @@ public class ElasticSearchOutputRepository implements OutputRepository {
                                         
                             }
                         }
+                        /**************************/
+
+                        
+
                         //System.out.println("\n\nRESPOMS 0\n\n\n"+freq);
                         return new StringOccurrences(freq);
         
@@ -149,6 +161,57 @@ public class ElasticSearchOutputRepository implements OutputRepository {
         final QueryBuilder tweetsInTimeWindowAndFromMonitoringActivity = QueryBuilders.boolQuery()
                 .must(beFromThisMonitoringActivity).must(beInTimeWindow);
         
+
+/************HASH*************/
+Map<String, Integer> freq = new HashMap<String, Integer>();
+                                final SearchResponse response0 = this.client
+                .prepareSearch(ElasticSearchInputRepository.DATABASE_NAME).setTypes("hash")
+                .setQuery(beInTimeWindow).setSize(maxItems).execute().actionGet();
+//System.out.println("\n\nQUI CI SEI ARRIVATO\n\n\n"+response0);
+                if(response0.hits().getTotalHits() != 0){
+
+        final Iterator<SearchHit> resultsIterator = response0.getHits().iterator();
+        
+                            while (resultsIterator.hasNext()) {
+                                final SearchHit currentResult = resultsIterator.next();
+                                final String jsonContextTweet = currentResult.getSourceAsString();
+                                            try {
+                                             JSONObject json = objectMapper.readValue(jsonContextTweet, JSONObject.class);
+                                             ArrayList<LinkedHashMap> texts = (ArrayList<LinkedHashMap>) json.get("texts");
+    
+                                            for(int s=0; s < texts.size();s++ ){
+                                                //System.out.println("Sto stampando CON IL GET\n\n"+author.get(s).get("screenName"));
+                                                final String stringValue = (String) texts.get(s).get("text");
+                                                //qui devo fare la tokenizzazione
+                                                StringTokenizer st = new StringTokenizer(stringValue);
+                                                while (st.hasMoreElements()) {
+                                                            //System.out.println(st.nextElement());
+                                                            String valueToStore = String.valueOf(st.nextElement());
+                                                        
+                                                Integer count = freq.get(valueToStore);
+                                                if (count == null) {
+                                                    freq.put(valueToStore, 1);
+                                                }
+                                                else {
+                                                    freq.put(valueToStore, count + 1);
+                                                }
+                                                }
+                                            }
+                                            //   
+                                        } catch (final Exception e) {
+                                            //System.out.println("Sto stampando E"+e);
+                                        }
+                                        
+                            }
+                        }
+                        //System.out.println("\n\nRESPOMS 0\n\n\n"+freq);
+                        return new StringOccurrences(freq);
+                        /**************************/
+
+
+
+
+        /***
         // facet
         final String hashTagsFacetName = "hashtagText";
         final String hashTagsField = "text";
@@ -159,12 +222,14 @@ public class ElasticSearchOutputRepository implements OutputRepository {
                 .prepareSearch(ElasticSearchInputRepository.DATABASE_NAME)
                 .setQuery(tweetsInTimeWindowAndFromMonitoringActivity).addFacet(hashTagsFacet)
                 .setSize(maxItems).execute().actionGet();
-        
+        //System.out.println(response);
         LOGGER.debug("found '" + response.hits().getTotalHits() + "' hits");
         final TermsFacet hashTagsFacets = (TermsFacet) response.facets().facetsAsMap()
                 .get(hashTagsFacetName);
         final Map<String, Integer> hashtags = convertToMap(hashTagsFacets);
+        System.out.println("\n\nRESPOMS 0\n\n\n"+hashtags);
         return new StringOccurrences(hashtags);
+        ***/
     }
     
     public StringOccurrences hashTagsOccurrences(User timelineAuthor, DateTime startDate,
