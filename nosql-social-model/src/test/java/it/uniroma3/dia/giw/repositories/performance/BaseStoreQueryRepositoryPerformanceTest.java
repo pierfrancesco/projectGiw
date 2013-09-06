@@ -498,14 +498,14 @@ public abstract class BaseStoreQueryRepositoryPerformanceTest {
         Date createdAt = dateTime.toDate();
         //System.out.println(dateTime);
         
-        //String text = (String) jsonObject.get("text");
+        String text = (String) jsonObject.get("text");
         int rand = random.nextInt(2); 
-        String text = "";
+        /*String text = "";
         if(rand == 1)
             {         text = "Soon as possible i'll fix this problem about #escapestring, but now i want to test the #efficiency";
 }else{
                     text = "I think that work in #summer it's a crime to the #humanity";
-        }
+        }*/
         //System.out.println(text);
         String source = "source";
         User user = new User();

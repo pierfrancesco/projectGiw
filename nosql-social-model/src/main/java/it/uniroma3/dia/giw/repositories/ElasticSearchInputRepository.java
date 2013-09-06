@@ -201,8 +201,8 @@ public class ElasticSearchInputRepository implements InputRepository {
                     final String toStore = "\""+String.valueOf(tweet.getUser().getId())+"\"";
                     final String toStore0 = String.valueOf(tweet.getUser().getId());
                     final String toStore1 = String.valueOf(tweet.getUser().getScreenName());
-
-                    final String toStore3 = "{\"text\":\""+textRaw+"\"}";
+                    final String alphaAndDigits = textRaw.replaceAll("[^\\p{Alpha}\\p{Digit}]+"," ");
+                    final String toStore3 = "{\"text\":\""+alphaAndDigits+"\"}";
 
 
                     //System.out.println("\nora NOci sono\n+++++++++++++++++++++++++++++++++"+textRaw);
@@ -217,7 +217,8 @@ public class ElasticSearchInputRepository implements InputRepository {
                     //final String toStore = "{\"time\":\""+dateIdString+"\",\"author\":["+tweet.getUser().getId()+"]}";
                     final String toStore0 = String.valueOf(tweet.getUser().getId());
                     final String toStore1 = String.valueOf(tweet.getUser().getScreenName());
-                    final String toStore3 = "{\"texts\":[{\"text\":\""+textRaw+"\"}],\"createdAt\":\""+dateIdString+"\"}";
+                    final String alphaAndDigits = textRaw.replaceAll("[^\\p{Alpha}\\p{Digit}]+"," ");
+                    final String toStore3 = "{\"texts\":[{\"text\":\""+alphaAndDigits+"\"}],\"createdAt\":\""+dateIdString+"\"}";
                                                
                     IndexResponse indexResponse0 = null;
                     indexResponse0 = client

@@ -63,23 +63,6 @@ public class ElasticSearchOutputRepository implements OutputRepository {
         final QueryBuilder beFromThisMonitoringActivity = buildInQuery(monitoringActivityId);
         final QueryBuilder beInTimeWindow = buildInclusiveRangeQuery("createdAt", startDate,
                 endDate);
-        /*QueryBuilder beInTimeWindow = QueryBuilders
-                    .rangeQuery("_id")
-                    .from(startDate)
-                    .to(endDate)
-                    .includeLower(true)
-                    .includeUpper(false);*/
-
-        
-        // AND query
-        final QueryBuilder tweetsInTimeWindowAndFromMonitoringActivity = QueryBuilders.boolQuery()
-                .must(beFromThisMonitoringActivity).must(beInTimeWindow);
-        
-        // facet
-        final String screenNameFacetName = "screenName";
-        final String screenNameField = "screenName";
-        final TermsFacetBuilder authorFacet = buildFacetOnField(screenNameFacetName,
-                screenNameField);
 
 
         Map<String, Integer> freq = new HashMap<String, Integer>();
@@ -89,7 +72,6 @@ public class ElasticSearchOutputRepository implements OutputRepository {
         final SearchResponse response0 = this.client
                 .prepareSearch(ElasticSearchInputRepository.DATABASE_NAME).setTypes("occurences")
                 .setQuery(beInTimeWindow).setSize(maxItems).execute().actionGet();
-//System.out.println("\n\nQUI CI SEI ARRIVATO\n\n\n"+response0);
                 if(response0.hits().getTotalHits() != 0){
 
         final Iterator<SearchHit> resultsIterator = response0.getHits().iterator();
@@ -99,16 +81,7 @@ public class ElasticSearchOutputRepository implements OutputRepository {
                                 final String jsonContextTweet = currentResult.getSourceAsString();
                                             try {
                                              JSONObject json = objectMapper.readValue(jsonContextTweet, JSONObject.class);
-
-
-
                                              ArrayList<LinkedHashMap> author = (ArrayList<LinkedHashMap>) json.get("author");
-                                            //System.out.println("Sto stampando CON IL Array\n\n"+author);
-                                            //System.out.println("Sto stampando CON IL Array\n\n"+author.size());
-
-                                            
-
-                                            //
                                             for(int s=0; s < author.size();s++ ){
                                                 //System.out.println("Sto stampando CON IL GET\n\n"+author.get(s).get("screenName"));
                                                 final String stringValue = (String) author.get(s).get("screenName");
@@ -127,14 +100,26 @@ public class ElasticSearchOutputRepository implements OutputRepository {
                                         
                             }
                         }
+                        System.out.println("\n\nRESPOMS 0\n\n\n"+freq);
+                        return new StringOccurrences(freq);
                         /**************************/
 
                         
 
-                        //System.out.println("\n\nRESPOMS 0\n\n\n"+freq);
-                        return new StringOccurrences(freq);
+                        /***********CYBION***********
+
+                                // AND query
+        final QueryBuilder tweetsInTimeWindowAndFromMonitoringActivity = QueryBuilders.boolQuery()
+                .must(beFromThisMonitoringActivity).must(beInTimeWindow);
         
-        /*final SearchResponse response = this.client
+        // facet
+        final String screenNameFacetName = "screenName";
+        final String screenNameField = "screenName";
+        final TermsFacetBuilder authorFacet = buildFacetOnField(screenNameFacetName,
+                screenNameField);
+
+        
+        final SearchResponse response = this.client
                 .prepareSearch(ElasticSearchInputRepository.DATABASE_NAME).setTypes(ElasticSearchInputRepository.CONTEXT_TWEET_TYPE)
                 .setQuery(tweetsInTimeWindowAndFromMonitoringActivity).addFacet(authorFacet)
                 .setSize(maxItems).execute().actionGet();
@@ -145,7 +130,9 @@ public class ElasticSearchOutputRepository implements OutputRepository {
         final TermsFacet authorFacets = (TermsFacet) response.facets().facetsAsMap()
                 .get(screenNameFacetName);
         final Map<String, Integer> screenNameOccurrences = convertToMap(authorFacets);
-        return new StringOccurrences(screenNameOccurrences);*/
+        return new StringOccurrences(screenNameOccurrences);
+
+        ********CYBION************/
         
     }
     
@@ -204,7 +191,7 @@ Map<String, Integer> freq = new HashMap<String, Integer>();
                                         
                             }
                         }
-                        //System.out.println("\n\nRESPOMS 0\n\n\n"+freq);
+                        System.out.println("\n\nRESPOMS 0\n\n\n"+freq);
                         return new StringOccurrences(freq);
                         /**************************/
 
